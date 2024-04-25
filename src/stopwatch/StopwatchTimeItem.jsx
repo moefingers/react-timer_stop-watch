@@ -7,22 +7,28 @@ export default function StopwatchTimeItem(props){
     const {
         object: {
             time,
+            lastDifference,
             reason
         },
-         passedKey
+         passedKey,
+         stopwatchListElement
         } = props
 
     const stopwatchItemElement = useRef()
 
     useEffect(() => {
         stopwatchItemElement.current.animate(slideInFromLeft, 500)
+        setTimeout(() => {
+            stopwatchItemElement.current.scrollIntoView({behavior: "smooth"})
+        }, 250);
     }, [])
     return (
-        <li value={1000-passedKey}ref={stopwatchItemElement} className={`
+        <li href={"li-" + passedKey}
+        id={"li-" + passedKey} ref={stopwatchItemElement} className={`
         stopwatch-time-item
         ${reason === 'Stopped' ? 'text-shadow-blue'
         : reason === 'Lap' ? 'text-shadow-cyan' 
         : 'text-shadow-green'}
-        `}>{time}<span className='stopwatch-time-reason'> - {reason}</span></li>
+        `}>{time}({lastDifference})<span className='stopwatch-time-reason'> - {reason}</span></li>
     )
 }
