@@ -26,6 +26,7 @@ function runStopWatch() {
 
 // function to add lap time to timePassedStopwatchArray
 function addLapTimeToStopwatchArray(reason) {
+  if(stopwatchTime === 0) return
   let alreadyContainsTimeType = ""  // initialize already contains situation
   let indexOfTimeObjectToUpdate
   timePassedStopwatchArray.forEach((object, index) => { // for each object {time: 999, reason: 'Lap' || 'Stopped' || 'Stopped and Lap'}
@@ -53,19 +54,19 @@ useInterval(() => {
 
     return (
         <div className="stopwatch-container">
-        <div>{timeOfLastStopwatchChange} - Time of Last Stopwatch Change</div>
-        <div>Old Stopwatch Time: {oldStopwatchTime}</div>
-        <div>Stopwatch: {stopwatchTime}</div>
-        <button onClick={() => runStopWatch()}>{useIntervalActive ? 'Stop' : 'Watch'}</button>
-        {!useIntervalActive && <button onClick={() => setStopwatchTime(0)}>Reset</button>}
-        {!lapAndStopped && <button onClick={addLapTimeToStopwatchArray}>Lap</button>}
-        
-        {true && <div className='stopwatch-list-container'>
-          <h2>History</h2>
-          <ul className='stopwatch-unordered-list'>{timePassedStopwatchArray.length > 0 && timePassedStopwatchArray.map((object, index) => (
-            <StopwatchTimeItem key={index} passedKey={index} object={object}/>
-          ))}
-          </ul>
+            <div>{timeOfLastStopwatchChange} - Time of Last Stopwatch Change</div>
+            <div>Old Stopwatch Time: {oldStopwatchTime}</div>
+            <div>Stopwatch: {stopwatchTime}</div>
+            <button onClick={() => runStopWatch()}>{useIntervalActive ? 'Stop' : 'Watch'}</button>
+            {!useIntervalActive && <button onClick={() => setStopwatchTime(0)}>Reset</button>}
+            {!lapAndStopped && <button onClick={addLapTimeToStopwatchArray}>Lap</button>}
+            
+            {true && <div className='stopwatch-list-container'>
+            <h2>History</h2>
+            <ul className='stopwatch-unordered-list'>{timePassedStopwatchArray.length > 0 && timePassedStopwatchArray.map((object, index) => (
+                <StopwatchTimeItem key={index} passedKey={index} object={object}/>
+            ))}
+            </ul>
         </div>}
       </div>
     )
