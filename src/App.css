@@ -1,34 +1,49 @@
 body{
   background-color: black;
   color: white;
-  font-family: 'Courier New', Courier, monospace;
+  font-weight: 400;
+  font-family:  'Gill Sans', 'Gill Sans MT', "Calibri", 'Trebuchet MS', sans-serif;
 }
 
 body *{
   width: fit-content;
-  transition: .5s;
+  transition: .4s;
   font-size: 1.3rem;
 }
 
 
 .stopwatch-list-container {
-  list-style-type: "⌚"
+  border-radius: 1rem;
+  box-shadow: 0 0 10px rgba(255,255,255,1);
+  height: 50vh;
+  width: 30vh;
+  overflow-x:hidden;
+  overflow-y: auto;
+  
 }
 
-.stopwatch-list-container > li{
+.stopwatch-list-container h2{
+  width: fit-content;
+  margin: auto;
+}
+
+.stopwatch-unordered-list{
+  list-style-type: "⌚";
+  transition:.5s;
+}
+
+.stopwatch-unordered-list > li{
   transition: .5s;
-  opacity: 0;
 }
 
-.stopwatch-list-container > li.shown{
+.stopwatch-unordered-list > li.shown{
   opacity: 1;
 }
 
-.stopwatch-list-container > li:hover .stopwatch-time-reason{
+.stopwatch-unordered-list > li:hover .stopwatch-time-reason{
   opacity: 1;
   visibility: visible;
   transition: 0.5s;
-
 }
 
 .stopwatch-time-reason{
@@ -37,3 +52,19 @@ body *{
   transition: 0.5s;
 }
 
+
+.text-shadow-blue{
+  text-shadow: 0 0 10px rgba(0,0,255,1);
+  color: rgba(200,200,255,1)
+}
+
+.text-shadow-cyan{
+  text-shadow: 0 0 15px rgba(0,255,255,1);
+  color: rgba(200,255,255,1)
+}
+
+
+.text-shadow-green{
+  text-shadow: 0 0 10px rgba(0,255,0,1);
+  color: rgba(200,255,200,1)
+}
