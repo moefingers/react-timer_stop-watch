@@ -17,7 +17,7 @@ export default function StopwatchTimeItem(props){
     const stopwatchItemElement = useRef()
 
     useEffect(() => {
-        stopwatchItemElement.current.animate(slideInFromLeft, 500)
+        stopwatchItemElement.current.animate(slideInFromLeft, {duration: 500})
         setTimeout(() => {
             stopwatchItemElement?.current?.scrollIntoView({behavior: "smooth"})
         }, 250);

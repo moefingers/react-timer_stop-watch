@@ -28,12 +28,6 @@ body *{
   overflow: hidden;
 }
 
-.stopwatch-list-name-input{
-  height:10%;
-  width:50%;
-  border: 0;
-  padding: 0;
-}
 .stopwatch-scroll-container{
   height: 90%;
   width: 100%;
@@ -42,6 +36,130 @@ body *{
   scroll-behavior: smooth;
   box-sizing: content-box;
 }
+
+
+.stopwatch-list-navigation-container{
+  margin: 0 auto;
+  padding: 0;
+  height:8%;
+  width: 100%;
+  margin-bottom: 2%;
+  display: flex;
+  justify-content: center;
+  position: relative;
+}
+
+.stopwatch-input-container{
+  width: 60%;
+  display:flex;
+  justify-content: center;
+}
+
+input.stopwatch-list-name-input{
+  border: 0;
+  width:96%;
+  padding: 0 2%;
+  height:100%;
+  background: black;
+  text-align: center;
+  color:rgba(200,200,200,1);
+  box-shadow: 0 0 10px rgba(255,255,255,.2);
+  border-radius: 1rem;
+  transition: .5s;
+  z-index: 20;
+}
+
+input.stopwatch-list-name-input:hover{
+  text-shadow: 0 0 10px rgba(255,255,255,.5);
+  box-shadow: 0 0 10px rgba(255,255,255,.5);
+  color: rgba(210,210,210,1);
+  font-size: 1.7rem;
+}
+input.stopwatch-list-name-input:focus{
+  outline: 0;
+  text-shadow: 0 0 10px rgba(255,255,255,1);
+  box-shadow: 0 0 10px rgba(255,255,255,1);
+  font-size:1.5rem;
+  
+}
+
+.stopwatch-navigate-list-button{
+  border: 0;
+  padding: 0rem .3rem;
+  background: transparent;
+  color: rgb(180,180,180);
+  font-weight: 800;
+  transition: .5s;
+}
+.stopwatch-navigate-list-button:hover{
+  text-shadow: 0 0 10px rgba(255,255,255,.8);
+  color:rgb(210,210,210)
+}
+.stopwatch-navigate-list-button:active{
+  text-shadow: 0 0 10px rgba(255,255,255,1);
+  color:rgb(255,255,255);
+  transition: .2s;
+}
+
+.stopwatch-list-dropdown{
+  position:absolute;
+  bottom: 100%;
+  /* padding: 0 1rem; */
+  width: 50%;
+  overflow: hidden;
+  /* border-radius: 1rem 1rem 0 0 ; */
+  box-shadow: 0 0 .5rem rgba(255,255,255,.4);
+  opacity: 0;
+  visibility: hidden;
+  height: 0rem;
+  /* height: 20rem; */
+  transition: .2s;
+  background: rgba(0,0,0,.5);
+  backdrop-filter: blur(5px);
+  z-index: 19;
+}
+
+.stopwatch-list-dropdown-scroll{
+  height: 100%;
+  width: 100%;
+  overflow-x:hidden;
+  overflow-y:scroll;
+  scroll-behavior: smooth;
+  display:flex;
+  flex-flow: column nowrap;
+
+}
+.stopwatch-list-dropdown-scroll > :first-child{
+  margin-top: auto !important;
+}
+
+
+.stopwatch-input-container:hover .stopwatch-list-dropdown{
+  opacity: 1;
+  visibility: visible;
+  height: 20rem;
+  transition: .8s;
+}
+
+.stopwatch-list-dropdown-item{
+  text-align: center;
+  position: static;
+  width:100%;
+  margin: 0;
+  height:fit-content;
+  transition: .5s;
+  padding: 0.3rem 0;
+  color: rgba(200,200,200,1);
+  text-shadow: 0 0 1rem rgba(255,255,255,.6);
+}
+
+.stopwatch-list-dropdown-item:hover{
+  color: rgba(255,255,255,1);
+  text-shadow: 0 0 1rem rgba(255,255,255,1);
+  font-size: 2rem;
+  transition: .3s;
+}
+
 
 
 
