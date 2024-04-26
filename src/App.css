@@ -9,6 +9,7 @@ body{
   
   animation: fadeInAnimation ease 1s;
   overflow-x: hidden;
+  user-select: none;
 }
 
 

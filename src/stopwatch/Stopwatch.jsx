@@ -224,7 +224,7 @@ const stopwatchScrollElement = useRef()
                 {!useIntervalActive && <button className='stopwatch-navigate-list-button' onClick={nextList}>&gt;</button>}
               </div>
               <div className="stopwatch-control-button-container"><button className='stopwatch-control-button' onClick={() => runStopWatch()}>{useIntervalActive ? 'Stop' : 'Watch'}</button>
-              {!useIntervalActive && <button className='stopwatch-control-button' onClick={resetAndCreateNewList}>Reset</button>}
+              {!useIntervalActive && <button className='stopwatch-control-button' onClick={resetAndCreateNewList}>New</button>}
               {!lapAndStopped&& !stopwatchTime == 0 && <button className='stopwatch-control-button' onClick={addLapTimeToStopwatchArray}>Lap</button>}
               </div>
               
