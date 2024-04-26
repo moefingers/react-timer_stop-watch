@@ -12,6 +12,7 @@ const [timeOfLastStopwatchChange, setTimeOfLastStopwatchChange] = useState(Date.
 const [lastStoppedStopwatchTime, setLastStoppedStopwatchTime] = useState(0) // Old Stopwatch Time to record previous active time // Not timestamp IE 3000 ms
 const [lastLapStopwatchTime, setLastLapStopwatchTime] = useState(0) // Old Stopwatch Time to record previous lap time // Not timestamp IE 3000 ms
 const [avgLapTime, setAvgLapTime] = useState(0) // stored average lap time
+const [avgLapTimeWithoutStopped, setAvgLapTimeWithoutStopped] = useState(0) // stored avg lap time excluding stpped times
 const [stopwatchTime, setStopwatchTime] = useState(0) // Stopwatch Time (total time while active) // Not timestamp IE 3123 ms
 const [useIntervalActive, setUseIntervalActive] = useState(false) // Use Interval Active State (to turn on and on recording of time difference since last activation)// true = on / false = off
 const [lapAndStopped, setLapAndStopped] = useState(false)
@@ -43,10 +44,16 @@ function addLapTimeToStopwatchArray(reason) {
   let alreadyContainsTimeType = ""  // initialize already contains situation
   let indexOfTimeObjectToUpdate
   let lapArray = []
+  let lapArrayWithoutStopped = []
   let totalLapTime = 0
+  let totalLapTimeWithoutStopped = 0
   stopwatchListObject[stopwatchListSelectedPseudoIndex].array.forEach((object, index) => { // for each object {time: 999, reason: 'Lap' || 'Stopped' || 'Stopped and Lap'}
     lapArray.push(object.lastDifference)
     totalLapTime += object.lastDifference
+    if(object.reason !== 'Stopped'){
+      lapArrayWithoutStopped.push(object.lastDifference);
+      totalLapTimeWithoutStopped += object.lastDifference
+    }
     if(object.time === stopwatchTime){ // if time is the same
       if (object.reason === 'Stopped') {alreadyContainsTimeType = "Stopped"; indexOfTimeObjectToUpdate = index} // already contains time of the STOPPED reason
       else if (object.reason === 'Lap' || object.reason === 'Stop + Lap') {alreadyContainsTimeType = "Lap"} // already contains time of LAP or STOPPED AND LAP reason
@@ -76,6 +83,11 @@ function addLapTimeToStopwatchArray(reason) {
   let divisor = lapArray.length == 0 ? 1 : lapArray.length
   console.log(`${totalLapTime} / ${divisor}`)
   setAvgLapTime(totalLapTime / divisor)
+
+  let divisorWithoutStopped = lapArrayWithoutStopped.length == 0 ? 1 : lapArrayWithoutStopped.length
+  console.log(`${totalLapTimeWithoutStopped} / ${divisorWithoutStopped}`)
+  setAvgLapTimeWithoutStopped(totalLapTimeWithoutStopped / divisorWithoutStopped)
+  
 }
 // interval updates every number of ms while state active
 useInterval(() => {
@@ -93,6 +105,11 @@ useEffect(() => {
   if(avgLapTime == stopwatchListObject[stopwatchListSelectedPseudoIndex].avgLapTime) return
   updateMatrix(stopwatchListSelectedPseudoIndex, {avgLapTime: avgLapTime})
 }, [avgLapTime])
+
+useEffect(() => {
+  if(avgLapTimeWithoutStopped == stopwatchListObject[stopwatchListSelectedPseudoIndex].avgLapTimeWithoutStopped) return
+  updateMatrix(stopwatchListSelectedPseudoIndex, {avgLapTimeWithoutStopped: avgLapTimeWithoutStopped})
+}, [avgLapTimeWithoutStopped])
 // reset and create new list and then navigate to it with setlist
 function resetAndCreateNewList(event){
   setStopwatchTime(0);
@@ -150,6 +167,9 @@ useEffect(() => {
     console.log("avg lap present")
     setAvgLapTime(stopwatchListObject[stopwatchListSelectedPseudoIndex].avgLapTime)
   } else {setAvgLapTime(0)}
+  if(stopwatchListObject[stopwatchListSelectedPseudoIndex]?.avgLapTimeWithoutStopped){
+    setAvgLapTimeWithoutStopped(stopwatchListObject[stopwatchListSelectedPseudoIndex].avgLapTimeWithoutStopped)
+  } else {setAvgLapTimeWithoutStopped(0)}
 }, [ stopwatchListSelectedPseudoIndex])
 
 const stopwatchListNameInput = useRef()
@@ -181,7 +201,14 @@ const stopwatchScrollElement = useRef()
                 ))}
                 </ul>
               </div>
-              <div className="stopwatch-time-container"><span className="stopwatch-time">⏱{stopwatchTime}</span><span className="average-stopwatch-lap">avg. lap: {Math.floor(avgLapTime)}</span></div>
+              <div className="stopwatch-time-container">
+                <span className="stopwatch-time">⏱{stopwatchTime}</span>
+                <span className="average-stopwatch-lap">avg. lap: {Math.floor(avgLapTime)}
+                  <span className="average-stopwatch-lap-without-stopped">
+                    w/o stopped: {Math.floor(avgLapTimeWithoutStopped)}
+                  </span>
+                </span>
+              </div>
               <div className='stopwatch-list-navigation-container'>
                 {!useIntervalActive && <button className='stopwatch-navigate-list-button' onClick={previousList}>&lt;</button>}
                 <div className="stopwatch-input-container">

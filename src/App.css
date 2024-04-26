@@ -58,6 +58,34 @@ body *{
   font-weight:900
 }
 
+.average-stopwatch-lap{
+  position: relative;
+}
+.average-stopwatch-lap-without-stopped{
+  opacity: 0;
+  visibility: hidden;
+  position: absolute;
+  width: max-content;
+  right: 0;
+  bottom: 100%;
+  z-index: 50;
+  text-align: right;
+  transition: .3s;
+  transform: translate(100%, 0);
+
+  background-color: rgba(0, 0, 0, 0.5);
+  border-radius: .5rem;
+  padding-left: .5rem;
+  /* backdrop-filter: blur(5px); */
+}
+
+.average-stopwatch-lap:hover .average-stopwatch-lap-without-stopped{
+  opacity: 1;
+  visibility: visible;
+  transition: .3s;
+  transform: translate(0, 0);
+}
+
 
 .stopwatch-list-navigation-container{
   margin: 0 auto;
