@@ -213,7 +213,7 @@ const stopwatchScrollElement = useRef()
                 {!useIntervalActive && <button className='stopwatch-navigate-list-button' onClick={previousList}>&lt;</button>}
                 <div className="stopwatch-input-container">
                   <input onChange={updateListName} ref={stopwatchListNameInput} className='stopwatch-list-name-input' type="text" placeholder='Stopwatch List Name' defaultValue={stopwatchListObject[stopwatchListSelectedPseudoIndex].name}/>
-                  {Object.keys(stopwatchListObject).length > 1 && <div className="stopwatch-list-dropdown">
+                  {Object.keys(stopwatchListObject).length > 1 && !useIntervalActive && <div className="stopwatch-list-dropdown">
                     <div ref={stopwatchListDropdownScrollElement} className="stopwatch-list-dropdown-scroll">
                       {Object.keys(stopwatchListObject).filter((key) => key != stopwatchListSelectedPseudoIndex).map((key, index) => (
                       <p className='stopwatch-list-dropdown-item' key={index} onClick={(event) => {setList(event, Number(key))}}>{stopwatchListObject[key].name}</p>
