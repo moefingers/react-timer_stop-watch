@@ -15,12 +15,11 @@ const [stopwatchTime, setStopwatchTime] = useState(0) // Stopwatch Time (total t
 const [useIntervalActive, setUseIntervalActive] = useState(false) // Use Interval Active State (to turn on and on recording of time difference since last activation)// true = on / false = off
 const [lapAndStopped, setLapAndStopped] = useState(false)
 
-const [timePassedStopwatchArray, setTimePassedStopwatchArray] = useState([])
 // const [stopwatchListMatrix, setStopwatchListMatrix] = useState([{name: "list one", array: [{time: 333, lastDifference: 4, reason: 'Stopped'}]}])
 
 const defaultStopwatchListItemObject = {storedTime: 0, name: "list one", array: []}
-const [stopwatchListMatrix, setStopwatchListMatrix] = useState([defaultStopwatchListItemObject])
-const [stopwatchListSelectedIndex, setStopwatchListSelectedIndex] = useState(0)
+const [stopwatchListObject, setStopwatchListObject] = useState({0: defaultStopwatchListItemObject})
+const [stopwatchListSelectedPseudoIndex, setStopwatchListSelectedPseudoIndex] = useState(0)
 // function to run (resume) stopwatch
 function runStopWatch() {
   setTimeOfLastStopwatchChange(Date.now()) // freshen time stamp A
@@ -32,16 +31,21 @@ function runStopWatch() {
   setUseIntervalActive(!useIntervalActive) // begin updating difference in time by activating interval
 }
 
-function updateMatrix(objectIndex, updateObject) {
-  console.log(updateObject)
-  let splicedMatrix = [...stopwatchListMatrix]
-  splicedMatrix.splice(objectIndex, 1)
-  setStopwatchListMatrix([
-    ...splicedMatrix,
+function updateMatrix(objectPseudoIndex, updateObject) {
+  // console.log(updateObject)
+  // let actualIndex = getIndexOfListByPseudoIndex(objectPseudoIndex)
+  // let splicedMatrix = [...stopwatchListMatrix]
+  // splicedMatrix.splice(objectPseudoIndex, actualIndex)
+  // setStopwatchListMatrix([
+  //   ...splicedMatrix,
     
-    Object.assign({}, stopwatchListMatrix[stopwatchListSelectedIndex], updateObject)
+  //   Object.assign({}, stopwatchListMatrix[stopwatchListSelectedIndex], updateObject)
     
-  ])
+  // ])
+  console.log(stopwatchListObject)
+  console.log({[objectPseudoIndex]: updateObject})
+  console.log(Object.assign({},stopwatchListObject, {[objectPseudoIndex]: Object.assign({},stopwatchListObject[objectPseudoIndex], updateObject)}))
+  setStopwatchListObject(Object.assign({},stopwatchListObject, {[objectPseudoIndex]: Object.assign({},stopwatchListObject[objectPseudoIndex], updateObject)}))
 }
 // function to add lap time to timePassedStopwatchArray
 function addLapTimeToStopwatchArray(reason) {
@@ -49,29 +53,41 @@ function addLapTimeToStopwatchArray(reason) {
   if(stopwatchTime === 0) return
   let alreadyContainsTimeType = ""  // initialize already contains situation
   let indexOfTimeObjectToUpdate
-  console.log(stopwatchListMatrix)
-  console.log(stopwatchListMatrix[stopwatchListSelectedIndex].name)
-  stopwatchListMatrix[stopwatchListSelectedIndex].array.forEach((object, index) => { // for each object {time: 999, reason: 'Lap' || 'Stopped' || 'Stopped and Lap'}
+  // console.log(stopwatchListMatrix)
+  // console.log(stopwatchListMatrix[stopwatchListSelectedIndex].name)
+  // stopwatchListMatrix[stopwatchListSelectedIndex].array.forEach((object, index) => { // for each object {time: 999, reason: 'Lap' || 'Stopped' || 'Stopped and Lap'}
+  //   if(object.time === stopwatchTime){ // if time is the same
+  //     if (object.reason === 'Stopped') {alreadyContainsTimeType = "Stopped"; indexOfTimeObjectToUpdate = index} // already contains time of the STOPPED reason
+  //     else if (object.reason === 'Lap' || object.reason === 'Stopped and Lap') {alreadyContainsTimeType = "Lap"} // already contains time of LAP or STOPPED AND LAP reason
+  //   }
+  stopwatchListObject[stopwatchListSelectedPseudoIndex].array.forEach((object, index) => { // for each object {time: 999, reason: 'Lap' || 'Stopped' || 'Stopped and Lap'}
     if(object.time === stopwatchTime){ // if time is the same
       if (object.reason === 'Stopped') {alreadyContainsTimeType = "Stopped"; indexOfTimeObjectToUpdate = index} // already contains time of the STOPPED reason
       else if (object.reason === 'Lap' || object.reason === 'Stopped and Lap') {alreadyContainsTimeType = "Lap"} // already contains time of LAP or STOPPED AND LAP reason
     }
   }) // end for each 
+  // if(alreadyContainsTimeType == "Stopped"){ // if already contains time of the STOPPED reason
+  //   let {lastDifference} = stopwatchListMatrix[stopwatchListSelectedIndex].array[indexOfTimeObjectToUpdate]
+  //   stopwatchListMatrix[stopwatchListSelectedIndex].array.splice(indexOfTimeObjectToUpdate, 1) // remove the old one from the array
+  //   let splicedMatrix = [...stopwatchListMatrix]
+  //   splicedMatrix.splice(stopwatchListSelectedIndex, 1)
   if(alreadyContainsTimeType == "Stopped"){ // if already contains time of the STOPPED reason
-    let {lastDifference} = stopwatchListMatrix[stopwatchListSelectedIndex].array[indexOfTimeObjectToUpdate]
-    stopwatchListMatrix[stopwatchListSelectedIndex].array.splice(indexOfTimeObjectToUpdate, 1) // remove the old one from the array
-    let splicedMatrix = [...stopwatchListMatrix]
-    splicedMatrix.splice(stopwatchListSelectedIndex, 1)
-
-
-    setStopwatchListMatrix([
-      ...splicedMatrix,
-      Object.assign({}, stopwatchListMatrix[stopwatchListSelectedIndex], {array: [
-        ...stopwatchListMatrix[stopwatchListSelectedIndex].array,
-        {time: stopwatchTime, lastDifference: lastDifference, reason: 'Stopped and Lap'}
-      ]}
-    )
-    ])
+    let {lastDifference} = stopwatchListObject[stopwatchListSelectedPseudoIndex].array[indexOfTimeObjectToUpdate] // destructure last difference
+    stopwatchListObject[stopwatchListSelectedPseudoIndex].array.splice(indexOfTimeObjectToUpdate, 1) // remove the old one from the array of times
+    // let splicedMatrix = [...stopwatchListMatrix]
+    // splicedMatrix.splice(stopwatchListSelectedIndex, 1)
+    updateMatrix(stopwatchListSelectedPseudoIndex, {array: [
+      ...stopwatchListObject[stopwatchListSelectedPseudoIndex].array,
+      {time: stopwatchTime, lastDifference: lastDifference, reason: 'Stopped and Lap'}
+    ]})
+    // setStopwatchListMatrix([
+    //   ...splicedMatrix,
+    //   Object.assign({}, stopwatchListMatrix[stopwatchListSelectedIndex], {array: [
+    //     ...stopwatchListMatrix[stopwatchListSelectedIndex].array,
+    //     {time: stopwatchTime, lastDifference: lastDifference, reason: 'Stopped and Lap'}
+    //   ]}
+    // )
+    // ])
 
 
 
@@ -80,17 +96,22 @@ function addLapTimeToStopwatchArray(reason) {
 
   if (alreadyContainsTimeType == "" || reason == "Stopped") { // add time with LAP type if it doesn't already exist as any other type
 
-    let splicedMatrix = [...stopwatchListMatrix]
-    splicedMatrix.splice(stopwatchListSelectedIndex, 1)
-    setStopwatchListMatrix([
-      ...splicedMatrix,
+    // let splicedMatrix = [...stopwatchListMatrix]
+    // splicedMatrix.splice(stopwatchListSelectedIndex, 1)
+    // setStopwatchListMatrix([
+    //   ...splicedMatrix,
       
-      Object.assign({}, stopwatchListMatrix[stopwatchListSelectedIndex], {array: [
-        ...stopwatchListMatrix[stopwatchListSelectedIndex].array, 
-        {time: stopwatchTime, lastDifference: stopwatchTime - lastLapStopwatchTime, reason: typeof reason == 'string' && reason || 'Lap'}
-      ]})
+    //   Object.assign({}, stopwatchListMatrix[stopwatchListSelectedIndex], {array: [
+    //     ...stopwatchListMatrix[stopwatchListSelectedIndex].array, 
+    //     {time: stopwatchTime, lastDifference: stopwatchTime - lastLapStopwatchTime, reason: typeof reason == 'string' && reason || 'Lap'}
+    //   ]})
       
-    ])
+    // ])
+
+    updateMatrix(stopwatchListSelectedPseudoIndex, {array: [
+      ...stopwatchListObject[stopwatchListSelectedPseudoIndex].array, 
+      {time: stopwatchTime, lastDifference: stopwatchTime - lastLapStopwatchTime, reason: typeof reason == 'string' && reason || 'Lap'}
+    ]})
   
   } // include old array and tag on time with LAP reason
 }
@@ -111,63 +132,92 @@ const stopwatchScrollElement = useRef()
 
     useEffect(() => {
       console.log( lastStoppedStopwatchTime)
-      if(lastStoppedStopwatchTime == stopwatchListMatrix[stopwatchListSelectedIndex].storedTime) return
-      updateMatrix(stopwatchListSelectedIndex, {storedTime: lastStoppedStopwatchTime})
+      if(lastStoppedStopwatchTime == stopwatchListObject[stopwatchListSelectedPseudoIndex].storedTime) return
+      updateMatrix(stopwatchListSelectedPseudoIndex, {storedTime: lastStoppedStopwatchTime})
     }, [lastLapStopwatchTime])
 // reset
 function resetAndCreateNewList(event){
   setStopwatchTime(0);
   setLastLapStopwatchTime(0)
-  setStopwatchListMatrix([...stopwatchListMatrix, Object.assign({}, defaultStopwatchListItemObject, {name: `List ${stopwatchListMatrix.length + 1}`})])
-  
-  nextList(event, stopwatchListMatrix.length)
+  // setStopwatchListMatrix([...stopwatchListMatrix, Object.assign({}, defaultStopwatchListItemObject, {name: `List ${stopwatchListMatrix.length + 1}`})])
+  updateMatrix(Object.keys(stopwatchListObject).length, Object.assign({}, defaultStopwatchListItemObject, {name: `List ${Object.keys(stopwatchListObject).length + 1}`}))
+  setList(event, Object.keys(stopwatchListObject).length)
 }
 
 function nextList(event, overrideIndex = null){
   console.log(overrideIndex)
-  if(stopwatchListSelectedIndex == stopwatchListMatrix.length - 1 && overrideIndex == null) return
+  console.log(Object.keys(stopwatchListObject).length)
+  if(stopwatchListSelectedPseudoIndex == Object.keys(stopwatchListObject).length - 1 && overrideIndex == null) return
   stopwatchListElement.current.animate(slideOutToLeft, 250)
   setTimeout(() => {
-    let newSelectedIndex = overrideIndex || stopwatchListSelectedIndex + 1
+    let newSelectedIndex = overrideIndex || stopwatchListSelectedPseudoIndex + 1
     console.log(newSelectedIndex)
-    setStopwatchListSelectedIndex(newSelectedIndex)
+    setStopwatchListSelectedPseudoIndex(newSelectedIndex)
     stopwatchListElement.current.animate(slideInFromRight, 250)
   }, 250);
 }
 
+function setList(event, index){
+  let [animation1, animation2] = [null, null]
+  if (index > stopwatchListSelectedPseudoIndex){animation1 = slideOutToLeft; animation2 = slideInFromRight}
+  else if (index < stopwatchListSelectedPseudoIndex){animation1 = slideOutToRight; animation2 = slideInFromLeft}
+  else {return}
+  stopwatchListElement.current.animate(animation1, 250)
+  setTimeout(() => {
+    setStopwatchListSelectedPseudoIndex(index)
+    stopwatchListElement.current.animate(animation2, 250)
+  }, 250);
+}
+
 function previousList(){
-  if(stopwatchListSelectedIndex == 0) return
+  if(stopwatchListSelectedPseudoIndex == 0) return
   stopwatchListElement.current.animate(slideOutToRight, 250)
   setTimeout(() => {
-    let newSelectedIndex = stopwatchListSelectedIndex - 1
+    let newSelectedIndex = stopwatchListSelectedPseudoIndex - 1
     console.log(newSelectedIndex)
-    setStopwatchListSelectedIndex(newSelectedIndex)
+    setStopwatchListSelectedPseudoIndex(newSelectedIndex)
     stopwatchListElement.current.animate(slideInFromLeft, 250)
   }, 250);
 }
 
 useEffect(() => {
-  let newTime = stopwatchListMatrix[stopwatchListSelectedIndex].storedTime
-  stopwatchListNameInput.current.value = stopwatchListMatrix[stopwatchListSelectedIndex]?.name
+  let newTime = stopwatchListObject[stopwatchListSelectedPseudoIndex].storedTime
+  stopwatchListNameInput.current.value = stopwatchListObject[stopwatchListSelectedPseudoIndex]?.name
   setLastStoppedStopwatchTime(newTime)
   setLastLapStopwatchTime(newTime)
   setStopwatchTime(newTime)
 
-  console.log(stopwatchListMatrix[stopwatchListSelectedIndex].array)
-}, [ stopwatchListSelectedIndex])
+  console.log(stopwatchListObject[stopwatchListSelectedPseudoIndex].array)
+ 
+}, [ stopwatchListSelectedPseudoIndex])
 
 const stopwatchListNameInput = useRef()
 
+// function getIndexOfListByName(name){
+//   return stopwatchListObject.findIndex(list => list.name == name)
+// }
+// function getIndexOfListByPseudoIndex(pseudoIndex){
+//   return stopwatchListMatrix.findIndex(list => list.pseudoIndex == pseudoIndex)
+// }
+
+
+// filter out the one that is selected
+// console.log(stopwatchListObject.filter((list, index) => index != stopwatchListSelectedPseudoIndex))
+// console.log(Object.keys(stopwatchListObject[stopwatchListSelectedPseudoIndex].filter(key, index) => )
+
+// console.log(stopwatchListObject)
+// console.log(stopwatchListObject[stopwatchListSelectedPseudoIndex].array)
     return (
         <div className="stopwatch-container">
-          <button className='console-log-matrix' onClick={() => console.log(stopwatchListMatrix)}>console matrix</button>
-          <button className="changenamelistone" onClick={() => {
-            setStopwatchListMatrix(Object.assign(
+          <button className='console matrixlength' onClick={() => console.log(Object.keys(stopwatchListObject).length)}>cons mat leng</button>
+          <button className='console-log-matrix' onClick={() => console.log(stopwatchListObject)}>console matrix</button>{stopwatchListSelectedPseudoIndex}
+          {/* <button className="changenamelistone" onClick={() => {
+            setStopwatchListObject(Object.assign(
               {}, 
-              stopwatchListMatrix,
+              stopwatchListObject,
               {[0] : Object.assign(stopwatchListMatrix[0], {name: "fdf"})}
               ));
-            }}>Change l1 name</button>{stopwatchListSelectedIndex}
+            }}>Change l1 name</button> */}
             <div>{timeOfLastStopwatchChange} - Time of Last Stopwatch Change</div>
             <div>Last Stopped Stopwatch Time: {lastStoppedStopwatchTime}</div>
             <div>Stopwatch: {stopwatchTime}</div>
@@ -179,18 +229,20 @@ const stopwatchListNameInput = useRef()
             {true && <div ref={stopwatchListElement} className='stopwatch-list-container'>
               
               <div ref={stopwatchScrollElement} className="stopwatch-scroll-container">
-                {stopwatchListMatrix.length > 0 && stopwatchListMatrix.filter((list, index) => {index !== stopwatchListSelectedIndex}).map((list, index) => (
-                  <h2 key={index} onClick={() => setStopwatchListSelectedIndex(index)}>{list.name}</h2>
-                ))}
-                <ul className='stopwatch-unordered-list'>{stopwatchListMatrix[stopwatchListSelectedIndex]?.array.length > 0 && stopwatchListMatrix[stopwatchListSelectedIndex].array.map((object, index) => (
+                
+                <ul className='stopwatch-unordered-list'>{stopwatchListObject[stopwatchListSelectedPseudoIndex]?.array.length > 0 && stopwatchListObject[stopwatchListSelectedPseudoIndex].array.map((object, index) => (
                     <StopwatchTimeItem key={index} passedKey={index} object={object} stopwatchListElement={stopwatchListElement}/>
                 ))}
                 </ul>
               </div>
-              <button className='stopwatch-previous-list-button' onClick={previousList}>◀</button>
-              <input ref={ stopwatchListNameInput} className='stopwatch-list-name-input' type="text" placeholder='Stopwatch List Name' defaultValue={stopwatchListMatrix[stopwatchListSelectedIndex].name}/>
-              <button className='stopwatch-next-list-button' onClick={nextList}>▶</button>
+              {!useIntervalActive && <button className='stopwatch-previous-list-button' onClick={previousList}>◀</button>}
+              <input ref={ stopwatchListNameInput} className='stopwatch-list-name-input' type="text" placeholder='Stopwatch List Name' defaultValue={stopwatchListObject[stopwatchListSelectedPseudoIndex].name}/>
+              {!useIntervalActive && <button className='stopwatch-next-list-button' onClick={nextList}>▶</button>}
+              {/* getIndexOfListByName(stopwatchListMatrix[stopwatchListSelectedIndex].name) */}
             </div>}
+            {/* {stopwatchListMatrix.length > 0 && stopwatchListMatrix.filter((list, index) => index != stopwatchListSelectedIndex).map((list, index) => (
+                  <h2 key={index} onClick={(event) => {setList(event,getIndexOfListByName(list.name))}}>{list.name}</h2>
+                ))} */}
       </div>
     )
 }
