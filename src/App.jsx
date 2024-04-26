@@ -20,8 +20,8 @@ const [timeOnPageLoad, setTimeOnPageLoad] = useState(Date.now())
   return (
     <div className='app-container'>
       
-      <div className='development'>{timeOnPageLoad} - Time on Page Load</div>
-      <div className='development'>{currentTime} - Current Time</div>
+      {/* <div className='development'>{timeOnPageLoad} - Time on Page Load</div>
+      <div className='development'>{currentTime} - Current Time</div> */}
       <Stopwatch/>
     </div>
   )

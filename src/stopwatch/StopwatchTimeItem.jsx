@@ -23,7 +23,7 @@ export default function StopwatchTimeItem(props){
         }, 250);
     }, [])
     return (
-        <li href={"li-" + passedKey}
+        <li 
         id={"li-" + passedKey} ref={stopwatchItemElement} className={`
         stopwatch-time-item
         ${reason === 'Stopped' ? 'text-shadow-blue'

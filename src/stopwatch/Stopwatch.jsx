@@ -11,13 +11,15 @@ export default function Stopwatch() {
 const [timeOfLastStopwatchChange, setTimeOfLastStopwatchChange] = useState(Date.now()) // Time of Last Stopwatch Change // time stamp IE 1714009411220 ms
 const [lastStoppedStopwatchTime, setLastStoppedStopwatchTime] = useState(0) // Old Stopwatch Time to record previous active time // Not timestamp IE 3000 ms
 const [lastLapStopwatchTime, setLastLapStopwatchTime] = useState(0) // Old Stopwatch Time to record previous lap time // Not timestamp IE 3000 ms
+const [avgLapTime, setAvgLapTime] = useState(0) // stored average lap time
 const [stopwatchTime, setStopwatchTime] = useState(0) // Stopwatch Time (total time while active) // Not timestamp IE 3123 ms
 const [useIntervalActive, setUseIntervalActive] = useState(false) // Use Interval Active State (to turn on and on recording of time difference since last activation)// true = on / false = off
 const [lapAndStopped, setLapAndStopped] = useState(false)
 
+
 // const [stopwatchListMatrix, setStopwatchListMatrix] = useState([{name: "list one", array: [{time: 333, lastDifference: 4, reason: 'Stopped'}]}])
 
-const defaultStopwatchListItemObject = {storedTime: 0, name: "list one", array: []}
+const defaultStopwatchListItemObject = { storedTime: 0, name: "list one", array: []}
 const [stopwatchListObject, setStopwatchListObject] = useState({0: defaultStopwatchListItemObject})
 const [stopwatchListSelectedPseudoIndex, setStopwatchListSelectedPseudoIndex] = useState(0)
 // function to run (resume) stopwatch
@@ -40,11 +42,14 @@ function addLapTimeToStopwatchArray(reason) {
   if(stopwatchTime === 0) return
   let alreadyContainsTimeType = ""  // initialize already contains situation
   let indexOfTimeObjectToUpdate
-
+  let lapArray = []
+  let totalLapTime = 0
   stopwatchListObject[stopwatchListSelectedPseudoIndex].array.forEach((object, index) => { // for each object {time: 999, reason: 'Lap' || 'Stopped' || 'Stopped and Lap'}
+    lapArray.push(object.lastDifference)
+    totalLapTime += object.lastDifference
     if(object.time === stopwatchTime){ // if time is the same
       if (object.reason === 'Stopped') {alreadyContainsTimeType = "Stopped"; indexOfTimeObjectToUpdate = index} // already contains time of the STOPPED reason
-      else if (object.reason === 'Lap' || object.reason === 'Stopped and Lap') {alreadyContainsTimeType = "Lap"} // already contains time of LAP or STOPPED AND LAP reason
+      else if (object.reason === 'Lap' || object.reason === 'Stop + Lap') {alreadyContainsTimeType = "Lap"} // already contains time of LAP or STOPPED AND LAP reason
     }
   }) // end for each 
  
@@ -53,7 +58,7 @@ function addLapTimeToStopwatchArray(reason) {
     stopwatchListObject[stopwatchListSelectedPseudoIndex].array.splice(indexOfTimeObjectToUpdate, 1) // remove the old one from the array of times
     updateMatrix(stopwatchListSelectedPseudoIndex, {array: [
       ...stopwatchListObject[stopwatchListSelectedPseudoIndex].array,
-      {time: stopwatchTime, lastDifference: lastDifference, reason: 'Stopped and Lap'}
+      {time: stopwatchTime, lastDifference: lastDifference, reason: 'Stop + Lap'}
     ]})
 
 
@@ -68,6 +73,9 @@ function addLapTimeToStopwatchArray(reason) {
     ]})
   
   } // include old array and tag on time with LAP reason
+  let divisor = lapArray.length == 0 ? 1 : lapArray.length
+  console.log(`${totalLapTime} / ${divisor}`)
+  setAvgLapTime(totalLapTime / divisor)
 }
 // interval updates every number of ms while state active
 useInterval(() => {
@@ -76,10 +84,15 @@ useInterval(() => {
 
 
 
-    useEffect(() => {
-      if(lastStoppedStopwatchTime == stopwatchListObject[stopwatchListSelectedPseudoIndex].storedTime) return
-      updateMatrix(stopwatchListSelectedPseudoIndex, {storedTime: lastStoppedStopwatchTime})
-    }, [lastLapStopwatchTime])
+useEffect(() => {
+  if(lastStoppedStopwatchTime == stopwatchListObject[stopwatchListSelectedPseudoIndex].storedTime) return
+  updateMatrix(stopwatchListSelectedPseudoIndex, {storedTime: lastStoppedStopwatchTime})
+}, [lastLapStopwatchTime])
+
+useEffect(() => {
+  if(avgLapTime == stopwatchListObject[stopwatchListSelectedPseudoIndex].avgLapTime) return
+  updateMatrix(stopwatchListSelectedPseudoIndex, {avgLapTime: avgLapTime})
+}, [avgLapTime])
 // reset and create new list and then navigate to it with setlist
 function resetAndCreateNewList(event){
   setStopwatchTime(0);
@@ -133,7 +146,10 @@ useEffect(() => {
   setLastStoppedStopwatchTime(newTime)
   setLastLapStopwatchTime(newTime)
   setStopwatchTime(newTime)
-
+  if(stopwatchListObject[stopwatchListSelectedPseudoIndex]?.avgLapTime){
+    console.log("avg lap present")
+    setAvgLapTime(stopwatchListObject[stopwatchListSelectedPseudoIndex].avgLapTime)
+  } else {setAvgLapTime(0)}
 }, [ stopwatchListSelectedPseudoIndex])
 
 const stopwatchListNameInput = useRef()
@@ -150,29 +166,13 @@ const stopwatchScrollElement = useRef()
       if(stopwatchListDropdownScrollElement.current){
         let halfPad = (stopwatchListDropdownScrollElement.current.offsetWidth - stopwatchListDropdownScrollElement.current.clientWidth)/2
         stopwatchListDropdownScrollElement.current.style= `padding-left: ${halfPad}px; padding-right: ${halfPad}px`
-        
-      }
-    }, [stopwatchListDropdownScrollElement.current])
-
-    useEffect(() => {
-      console.log(stopwatchListDropdownScrollElement?.current?.children)
         stopwatchListDropdownScrollElement?.current?.children.length >0 && stopwatchListDropdownScrollElement?.current?.lastChild.scrollIntoView({behavior: "smooth"})
-    }, [stopwatchListDropdownScrollElement?.current?.children.length])
-
+      }
+    }, [stopwatchListObject])
 
     return (
         <div className="stopwatch-container">
-          <button className='console matrixlength' onClick={() => console.log(Object.keys(stopwatchListObject).length)}>cons mat leng</button>
-          <button className='console-log-matrix' onClick={() => console.log(stopwatchListObject)}>console matrix</button>{stopwatchListSelectedPseudoIndex}
-            <div>{timeOfLastStopwatchChange} - Time of Last Stopwatch Change</div>
-            <div>Last Stopped Stopwatch Time: {lastStoppedStopwatchTime}</div>
-            <div>Stopwatch: {stopwatchTime}</div>
-            <div>Last Lap Time: {lastLapStopwatchTime}</div>
-            <button onClick={() => runStopWatch()}>{useIntervalActive ? 'Stop' : 'Watch'}</button>
-            {!useIntervalActive && <button onClick={resetAndCreateNewList}>Reset</button>}
-            {!lapAndStopped&& !stopwatchTime == 0 && <button onClick={addLapTimeToStopwatchArray}>Lap</button>}
-            
-            {true && <div ref={stopwatchListElement} className='stopwatch-list-container'>
+            {<div ref={stopwatchListElement} className='stopwatch-list-container'>
               
               <div ref={stopwatchScrollElement} className="stopwatch-scroll-container">
                 
@@ -181,24 +181,33 @@ const stopwatchScrollElement = useRef()
                 ))}
                 </ul>
               </div>
+              <div className="stopwatch-time-container"><span className="stopwatch-time">⏱{stopwatchTime}</span><span className="average-stopwatch-lap">avg. lap: {Math.floor(avgLapTime)}</span></div>
               <div className='stopwatch-list-navigation-container'>
                 {!useIntervalActive && <button className='stopwatch-navigate-list-button' onClick={previousList}>&lt;</button>}
                 <div className="stopwatch-input-container">
                   <input onChange={updateListName} ref={stopwatchListNameInput} className='stopwatch-list-name-input' type="text" placeholder='Stopwatch List Name' defaultValue={stopwatchListObject[stopwatchListSelectedPseudoIndex].name}/>
-                  <div className="stopwatch-list-dropdown">
+                  {Object.keys(stopwatchListObject).length > 1 && <div className="stopwatch-list-dropdown">
                     <div ref={stopwatchListDropdownScrollElement} className="stopwatch-list-dropdown-scroll">
-                      {Object.keys(stopwatchListObject).length > 0 && Object.keys(stopwatchListObject).filter((key) => key != stopwatchListSelectedPseudoIndex).map((key, index) => (
+                      {Object.keys(stopwatchListObject).filter((key) => key != stopwatchListSelectedPseudoIndex).map((key, index) => (
                       <p className='stopwatch-list-dropdown-item' key={index} onClick={(event) => {setList(event, Number(key))}}>{stopwatchListObject[key].name}</p>
                     ))}
                     </div>
-                  </div>
+                  </div>}
                 </div>
                 {!useIntervalActive && <button className='stopwatch-navigate-list-button' onClick={nextList}>&gt;</button>}
               </div>
+              <div className="stopwatch-control-button-container"><button className='stopwatch-control-button' onClick={() => runStopWatch()}>{useIntervalActive ? 'Stop' : 'Watch'}</button>
+              {!useIntervalActive && <button className='stopwatch-control-button' onClick={resetAndCreateNewList}>Reset</button>}
+              {!lapAndStopped&& !stopwatchTime == 0 && <button className='stopwatch-control-button' onClick={addLapTimeToStopwatchArray}>Lap</button>}
+              </div>
+              
+              
               
             </div>}
             
              
+          
+          <div className="title">Stopwatch</div>
       </div>
     )
 }

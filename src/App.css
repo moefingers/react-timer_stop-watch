@@ -8,6 +8,7 @@ body{
   font-family:  'Gill Sans', 'Gill Sans MT', "Calibri", 'Trebuchet MS', sans-serif;
   
   animation: fadeInAnimation ease 1s;
+  overflow-x: hidden;
 }
 
 
@@ -16,20 +17,25 @@ body *{
   font-size: 1.3rem;
 }
 
-.stopwatch-container {
+/* .stopwatch-container {
   outline: 1px dashed red
+} */
+.title{
+  margin: auto;
 }
 
 .stopwatch-list-container {
   border-radius: 1rem;
   box-shadow: 0 0 10px rgba(255,255,255,1);
   height: 50vh;
-  width: 30vh;
+  width: 49vw;
   overflow: hidden;
 }
 
+
+
 .stopwatch-scroll-container{
-  height: 90%;
+  height: 75%;
   width: 100%;
   overflow-x:hidden;
   overflow-y:scroll;
@@ -37,20 +43,36 @@ body *{
   box-sizing: content-box;
 }
 
+.stopwatch-time-container{
+  margin:auto;
+  width: 95%;
+  height:5%;
+  background:transparent;
+  display: flex;
+  align-items:baseline;
+  justify-content: space-between
+}
+.stopwatch-time, .average-stopwatch-lap{
+  text-shadow: 0 0 10px rgba(255,100,100,1);
+  color: rgba(255,180,180,1);
+  font-weight:900
+}
+
 
 .stopwatch-list-navigation-container{
   margin: 0 auto;
   padding: 0;
-  height:8%;
+  height:10%;
   width: 100%;
-  margin-bottom: 2%;
   display: flex;
   justify-content: center;
+  align-items: center;
   position: relative;
 }
 
 .stopwatch-input-container{
   width: 60%;
+  height: 80%;
   display:flex;
   justify-content: center;
 }
@@ -79,6 +101,7 @@ input.stopwatch-list-name-input:focus{
   outline: 0;
   text-shadow: 0 0 10px rgba(255,255,255,1);
   box-shadow: 0 0 10px rgba(255,255,255,1);
+  color: rgba(255,255,255,1);
   font-size:1.5rem;
   
 }
@@ -161,6 +184,29 @@ input.stopwatch-list-name-input:focus{
 }
 
 
+.stopwatch-control-button-container{
+  height:10%;
+  width: 80%;
+  margin: auto;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+.stopwatch-control-button{
+height: 80%;
+background: black;
+color: rgba(200,200,200,1);
+border: 0;
+padding: 0 .5rem;
+transition: .5s;
+/* outline: 1px solid white; */
+}
+.stopwatch-control-button:hover{
+  color: rgba(255,255,255,1);
+  text-shadow: 0 0 1rem rgba(255,255,255,1);
+  font-size: 1.5rem;
+  transition: .3s;
+}
 
 
 .stopwatch-unordered-list{
@@ -171,10 +217,12 @@ input.stopwatch-list-name-input:focus{
 
 .stopwatch-unordered-list > li{
   transition: .5s;
+  font-size: 1.25rem;
 }
 
-.stopwatch-unordered-list > li.shown{
-  opacity: 1;
+.stopwatch-unordered-list > li:hover{
+  transition: .2s;
+  font-size: 1.45rem;
 }
 
 .stopwatch-unordered-list > li:hover .stopwatch-time-reason{
