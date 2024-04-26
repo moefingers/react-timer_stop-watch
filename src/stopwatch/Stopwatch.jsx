@@ -119,6 +119,11 @@ function setList(event, index){
   }, 250);
 }
 
+//update list name
+function updateListName(event){
+  updateMatrix(stopwatchListSelectedPseudoIndex, {name: event.target.value})
+}
+
 
 
 // upon selected index changing, read time from stored list and update states.. update input to reflect name from stored state
@@ -178,18 +183,17 @@ const stopwatchScrollElement = useRef()
               </div>
               <div className='stopwatch-list-navigation-container'>
                 {!useIntervalActive && <button className='stopwatch-navigate-list-button' onClick={previousList}>&lt;</button>}
-              <div className="stopwatch-input-container">
-                <input ref={ stopwatchListNameInput} className='stopwatch-list-name-input' type="text" placeholder='Stopwatch List Name' defaultValue={stopwatchListObject[stopwatchListSelectedPseudoIndex].name}/>
-                <div className="stopwatch-list-dropdown">
-                  <div ref={stopwatchListDropdownScrollElement} className="stopwatch-list-dropdown-scroll">
-                    {Object.keys(stopwatchListObject).length > 0 && Object.keys(stopwatchListObject).filter((key) => key != stopwatchListSelectedPseudoIndex).map((key, index) => (
-                    <p className='stopwatch-list-dropdown-item' key={index} onClick={(event) => {setList(event, Number(key))}}>{stopwatchListObject[key].name}</p>
-                  ))}
+                <div className="stopwatch-input-container">
+                  <input onChange={updateListName} ref={stopwatchListNameInput} className='stopwatch-list-name-input' type="text" placeholder='Stopwatch List Name' defaultValue={stopwatchListObject[stopwatchListSelectedPseudoIndex].name}/>
+                  <div className="stopwatch-list-dropdown">
+                    <div ref={stopwatchListDropdownScrollElement} className="stopwatch-list-dropdown-scroll">
+                      {Object.keys(stopwatchListObject).length > 0 && Object.keys(stopwatchListObject).filter((key) => key != stopwatchListSelectedPseudoIndex).map((key, index) => (
+                      <p className='stopwatch-list-dropdown-item' key={index} onClick={(event) => {setList(event, Number(key))}}>{stopwatchListObject[key].name}</p>
+                    ))}
+                    </div>
                   </div>
                 </div>
-              </div>
-              
-              {!useIntervalActive && <button className='stopwatch-navigate-list-button' onClick={nextList}>&gt;</button>}
+                {!useIntervalActive && <button className='stopwatch-navigate-list-button' onClick={nextList}>&gt;</button>}
               </div>
               
             </div>}
