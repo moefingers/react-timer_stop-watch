@@ -11,8 +11,12 @@ export default function SingleTimer({objectPseudoIndex, object, updateMatrix, de
         if (!deleteTimerConfirmation) {
             setDeleteTimerConfirmation(true)
         } else if (deleteTimerConfirmation) {
+            singleTimerElement.current.animate(slideOutToRight, {duration: 500, fill: "forwards"})
+            setTimeout(() => {
             setDeleteTimerConfirmation(false)
             deleteFromMatrix(objectPseudoIndex)
+                
+            }, 500);
         }
     }
 //timeStarted
