@@ -14,28 +14,35 @@ body{
 
 
 body *{
-  width: fit-content;
+  /* width: fit-content; */
   font-size: 1.3rem;
 }
 
-/* .stopwatch-container {
-  outline: 1px dashed red
-} */
-.title{
-  margin: auto;
+div.app-container{
+  display:grid;
+  grid-template-columns: 1fr 1fr;
 }
 
-.stopwatch-list-container {
+
+.stopwatch-container, .timer-container{
+  margin: .7rem;
+}
+.title{
+  margin: auto;
+  width: fit-content
+}
+
+.stopwatch-list-container, .timer-list-container {
   border-radius: 1rem;
   box-shadow: 0 0 10px rgba(255,255,255,1);
   height: 50vh;
-  width: 49vw;
+  width: 100%;
   overflow: hidden;
 }
 
 
 
-.stopwatch-scroll-container{
+.stopwatch-scroll-container, .timer-scroll-container{
   height: 75%;
   width: 100%;
   overflow-x:hidden;
@@ -43,6 +50,7 @@ body *{
   scroll-behavior: smooth;
   box-sizing: content-box;
 }
+
 
 .stopwatch-time-container{
   margin:auto;
@@ -56,7 +64,8 @@ body *{
 .stopwatch-time, .average-stopwatch-lap{
   text-shadow: 0 0 10px rgba(255,100,100,1);
   color: rgba(255,180,180,1);
-  font-weight:900
+  font-weight:900;
+  cursor:alias
 }
 
 .average-stopwatch-lap{
@@ -106,7 +115,7 @@ body *{
   justify-content: center;
 }
 
-input.stopwatch-list-name-input{
+input.stopwatch-list-name-input, .timer-name-input, .timer-time-input{
   border: 0;
   width:96%;
   padding: 0 2%;
@@ -120,13 +129,14 @@ input.stopwatch-list-name-input{
   z-index: 20;
 }
 
-input.stopwatch-list-name-input:hover{
+input.stopwatch-list-name-input:hover, input.timer-name-input:hover, input.timer-time-input:hover{
   text-shadow: 0 0 10px rgba(255,255,255,.5);
   box-shadow: 0 0 10px rgba(255,255,255,.5);
   color: rgba(210,210,210,1);
   font-size: 1.7rem;
 }
-input.stopwatch-list-name-input:focus{
+
+input.stopwatch-list-name-input:focus, input.timer-name-input:focus, input.timer-time-input:focus{
   outline: 0;
   text-shadow: 0 0 10px rgba(255,255,255,1);
   box-shadow: 0 0 10px rgba(255,255,255,1);
@@ -135,6 +145,9 @@ input.stopwatch-list-name-input:focus{
   
 }
 
+input.timer-name-input, input.timer-time-input{
+  width: 44%;
+}
 .stopwatch-navigate-list-button{
   border: 0;
   padding: 0rem .3rem;
@@ -142,6 +155,7 @@ input.stopwatch-list-name-input:focus{
   color: rgb(180,180,180);
   font-weight: 800;
   transition: .5s;
+  cursor:pointer
 }
 .stopwatch-navigate-list-button:hover{
   text-shadow: 0 0 10px rgba(255,255,255,.8);
@@ -155,7 +169,7 @@ input.stopwatch-list-name-input:focus{
 
 .stopwatch-list-dropdown{
   position:absolute;
-  bottom: 100%;
+  bottom: 91%;
   /* padding: 0 1rem; */
   width: 50%;
   overflow: hidden;
@@ -213,7 +227,7 @@ input.stopwatch-list-name-input:focus{
 }
 
 
-.stopwatch-control-button-container{
+.stopwatch-control-button-container, .timer-control-button-container{
   height:10%;
   width: 80%;
   margin: auto;
@@ -221,20 +235,28 @@ input.stopwatch-list-name-input:focus{
   justify-content: space-between;
   align-items: center;
 }
-.stopwatch-control-button{
+.stopwatch-control-button, .timer-button{
 height: 80%;
-background: black;
-color: rgba(200,200,200,1);
+background: transparent;
+color: rgba(180,180,180,1);
 border: 0;
 padding: 0 .5rem;
 transition: .5s;
 /* outline: 1px solid white; */
+  cursor:pointer
 }
-.stopwatch-control-button:hover{
+.stopwatch-control-button:hover, .timer-button:hover{
+  color: rgba(210,210,210,1);
+  text-shadow: 0 0 1rem rgba(255,255,255,.6);
+  font-size: 1.5rem;
+  transition: .3s;
+}
+
+.stopwatch-control-button:active, .timer-button:active{
   color: rgba(255,255,255,1);
   text-shadow: 0 0 1rem rgba(255,255,255,1);
   font-size: 1.5rem;
-  transition: .3s;
+  transition: .2s;
 }
 
 
@@ -242,6 +264,24 @@ transition: .5s;
   list-style-type: "⌚";
   transition:.5s;
   margin: 0;
+}
+
+.timer-unordered-list{
+  list-style-type: "⏲";
+  transition:.5s;
+  margin: 0;
+  margin-top: .4rem;
+}
+
+.timer-unordered-list > li{
+ margin-bottom: .3rem;
+}
+
+.timer-input-line, .timer-button-line{
+  height: 2rem;
+  display:flex;
+  justify-content: space-between;
+  margin: 0 .5rem;
 }
 
 .stopwatch-unordered-list > li{
@@ -283,6 +323,20 @@ transition: .5s;
   color: rgba(200,255,200,1)
 }
 
+
+@media screen and (max-width: 800px) {
+  div.app-container{
+    display:grid;
+    grid-template-columns: 1fr;
+  }
+}
+@media screen and (min-width: 800px) {
+  div.app-container{
+    display:grid;
+    grid-template-columns: 1fr 1fr;
+  }
+  
+}
 
 @keyframes fadeInAnimation {
   0% {
