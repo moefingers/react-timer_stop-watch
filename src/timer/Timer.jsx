@@ -29,7 +29,7 @@ export default function Timer() {
 
 
     function createNewTimer(event) {
-        updateMatrix(Object.keys(timerListObject).length, {name: `Timer ${Object.keys(timerListObject).length + 1}`})
+        updateMatrix(Object.keys(timerListObject).length, Object.assign({}, defaultTimerListObject, {name: `Timer ${Object.keys(timerListObject).length + 1}`}))
     }
 
     const timerScrollElement = useRef()
