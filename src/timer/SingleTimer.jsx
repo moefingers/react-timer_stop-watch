@@ -68,8 +68,8 @@ export default function SingleTimer({objectPseudoIndex, object, updateMatrix, de
             </div>
             <div className="timer-button-line">
                 <button className="timer-button" onClick={deleteTimer} onMouseLeave={() => setDeleteTimerConfirmation(false)}>{deleteTimerConfirmation ? "actually?" : "Delete"}</button>
-                {<button className="timer-button" onClick={resetTimer}>Reset</button>}
-                <button className="timer-button" onClick={startStopTimer}>{useIntervalActive ? "Stop" : "Start"}</button>
+                {object.timeElapsed != 0 && <button className="timer-button" onClick={resetTimer}>Reset</button>}
+                {timeRemainingElement.current.value != 0 && <button className="timer-button" onClick={startStopTimer}>{useIntervalActive ? "Stop" : "Start"}</button>}
             </div>
             
         </li>
