@@ -60,7 +60,7 @@ export default function SingleTimer({objectPseudoIndex, object, updateMatrix, de
         <li ref={singleTimerElement} className="single-timer">
             <div className="timer-input-line">
                 <input type="text" placeholder="Timer Name" className="timer-name-input" onChange={(e) => updateMatrix(objectPseudoIndex, {name: e.target.value})} value={object.name}/>
-                <input ref={timeRemainingElement} type="number" inputMode="numeric" placeholder="Timer For..." className="timer-time-input" onChange={(e) => updateMatrix(objectPseudoIndex, {initialTime: e.target.value})} defaultValue={object.initialTime - (object.timeElapsed || 0)} readOnly={useIntervalActive ? true : false}/>
+                <input ref={timeRemainingElement} type="number" inputMode="numeric" placeholder="milliseconds" className="timer-time-input" onChange={(e) => updateMatrix(objectPseudoIndex, {initialTime: e.target.value})} defaultValue={object.initialTime - (object.timeElapsed || 0)} readOnly={useIntervalActive ? true : false}/>
             </div>
             <div className="timer-button-line">
                 <button className="timer-button" onClick={deleteTimer} onMouseLeave={() => setDeleteTimerConfirmation(false)}>{deleteTimerConfirmation ? "actually?" : "Delete"}</button>
