@@ -3,7 +3,7 @@ import { fadeOpacityIn, slideInFromLeft, slideOutToRight } from '../assets/Anima
 import { useInterval } from 'usehooks-ts'
 export default function SingleTimer({objectPseudoIndex, object, updateMatrix, deleteFromMatrix}) {
 
-    const [timeRemaining, setTimeRemaining] = useState(object.initialTime - (object.timeElapsed || 0))
+    const [previousTimeElapsed, setPreviousTimeElapsed] = useState(0)
 
     const [useIntervalActive, setTimerIntervalActive] = useState(false)
     const [deleteTimerConfirmation, setDeleteTimerConfirmation] = useState(false)
@@ -15,21 +15,36 @@ export default function SingleTimer({objectPseudoIndex, object, updateMatrix, de
             deleteFromMatrix(objectPseudoIndex)
         }
     }
-
+//timeStarted
+//initialTime
+//timeElapsed
     const timeRemainingElement = useRef()
-    function startStopTimer(event) {
-        updateMatrix(objectPseudoIndex, {timeStarted: Date.now()})
-        setTimerIntervalActive(!useIntervalActive)
-    }
 
     function resetTimer(event) {
         setTimerIntervalActive(false)
         timeRemainingElement.current.value = object.initialTime
+        setPreviousTimeElapsed(0)
+        updateMatrix(objectPseudoIndex, {timeStarted: Date.now(), timeElapsed: 0})
+    }
+    function startStopTimer(event) {
+        updateMatrix(objectPseudoIndex, {timeStarted: Date.now()})
+        setPreviousTimeElapsed(object.timeElapsed || 0)
+        setTimerIntervalActive(!useIntervalActive)
     }
 
     useInterval(() => {
-        updateMatrix(objectPseudoIndex, {timeElapsed: Date.now() - object.timeStarted})
-        timeRemainingElement.current.value = object.initialTime - (object.timeElapsed || 0)
+        if(object.initialTime == 0 || object.initialTime - object.timeElapsed <= 0){
+            setTimerIntervalActive(false)
+            updateMatrix(objectPseudoIndex, {timeStarted: Date.now(), timeElapsed: 0})
+            timeRemainingElement.current.value = object.initialTime
+
+        } else {
+
+            updateMatrix(objectPseudoIndex, {timeElapsed: Date.now() - object.timeStarted + previousTimeElapsed})
+
+            timeRemainingElement.current.value = object.initialTime - (object.timeElapsed || 0)
+
+        }
     }, useIntervalActive ? 10 : null)
 
 
