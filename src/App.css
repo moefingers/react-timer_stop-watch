@@ -284,6 +284,24 @@ transition: .5s;
   margin: 0 .5rem;
 }
 
+.timer-settings-button {
+  background: transparent;
+  color: rgba(180,180,180,1);
+  border: 0;
+  padding: 0 .5rem;
+  transition: .5s;
+  cursor:pointer;
+  font-size:3.4rem;
+
+}
+
+.timer-settings-button:hover{
+  color: rgba(210,210,210,1);
+  text-shadow: 0 0 1rem rgba(255,255,255,.6);
+  font-size:3.5rem;
+  transition: .3s;
+}
+
 .stopwatch-unordered-list > li{
   transition: .5s;
   font-size: 1.25rem;

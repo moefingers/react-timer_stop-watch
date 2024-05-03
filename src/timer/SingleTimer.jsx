@@ -1,9 +1,11 @@
 import { useState, useEffect, useRef } from 'react'
 import { fadeOpacityIn, slideInFromLeft, slideOutToRight } from '../assets/Animations'
 import { useInterval } from 'usehooks-ts'
-//import TimePicker component from material ui
-import {LocalizationProvider, TimePicker} from '@mui/x-date-pickers'
+
+//mui
+import {LocalizationProvider, TimePicker, StaticTimePicker} from '@mui/x-date-pickers'
 import { AdapterDateFns } from '@mui/x-date-pickers/AdapterDateFnsV3'
+import { ThemeProvider, createTheme } from '@mui/material/styles'
 
 export default function SingleTimer({objectPseudoIndex, object, updateMatrix, deleteFromMatrix}) {
 
@@ -64,6 +66,12 @@ export default function SingleTimer({objectPseudoIndex, object, updateMatrix, de
         }, 250);
     }, [])
 
+    const darkTheme = createTheme({
+        palette: {
+          mode: 'dark',
+        },
+      });
+
     return (
         <li ref={singleTimerElement} className="single-timer">
             <div className="timer-input-line">
@@ -76,58 +84,80 @@ export default function SingleTimer({objectPseudoIndex, object, updateMatrix, de
                 {object.initialTime - (object.timeElapsed || 0) != 0 && <button className="timer-button" onClick={startStopTimer}>{useIntervalActive ? "Stop" : "Start"}</button>}
             </div>
             <LocalizationProvider dateAdapter={AdapterDateFns}>
-                <TimePicker sx={{
-
-                    '& .MuiOutlinedInput-notchedOutline': {
-                        color: 'pink',
-                        borderColor: 'pink',
-                        transition: ".3s",
-                        '&:hover': {
-                            borderColor: 'green',
-                        },
-                        '&.Mui-focused': {
-                            borderColor: 'purple',
-                        },
-                    },
-                    '& .MuiOutlinedInput-root': {
-                        color: 'white',
-                        '&.Mui-focused .MuiOutlinedInput-notchedOutline': {
-                            borderColor: 'purple'
-                        }
-                    },
-                    '& .MuiSvgIcon-root': {
-                        color: 'pink'
-                    },
-                    '& .MuiOutlinedInput-root': {
-                        color: 'white',
-                        '& fieldset': {
-                            color: 'red',
-                        },
-                        '&:hover fieldset': {
-                            color: 'green',
-                        },
-                        '&.Mui-focused fieldset': {
-                            color: 'purple',
-                        },
-                    },
-                    '& .MuiInputLabel-root': {
-                        color: 'red',
-
-                    },
-                    
-                    '& .MuiMenuItem-root': {
-                        color: 'red',
-
-                    },
-                    
-
-
-                }}
-
-                    label="Time picker"
-                    format={`hh:mm:ss`}
-                />
+                <ThemeProvider theme={darkTheme}>
+                    <TimePicker 
+                        sx={{
+                            '.MuiOutlinedInput-root': {
+                                width: "60%"
+                            }
+                        }}
+                        label="Timer Duration"
+                        views={["hours", "minutes", "seconds"]}
+                        format={`hh:mm:ss`}
+                        ampm={false}
+                        onChange={(val) => {console.log(val.getTime())}}
+                        timeSteps={{minutes: 1, seconds: 1}}
+                    />
+                    <button className="timer-settings-button">⚙</button>
+                </ThemeProvider>
             </LocalizationProvider>
         </li>
     )
 }
+
+
+/*
+
+After the work it took to find this stuff, I refuse to part with it. The lack of documentation is not nice.
+
+This is an sx prop for an MUI component. Particularly... for the outlined input.. for the <TimePicker/>
+
+sx={{
+
+    '& .MuiOutlinedInput-notchedOutline': {
+        color: 'pink',
+        borderColor: 'pink',
+        transition: ".3s",
+        '&:hover': {
+            borderColor: 'green',
+        },
+        '&.Mui-focused': {
+            borderColor: 'purple',
+        },
+    },
+    '& .MuiOutlinedInput-root': {
+        color: 'white',
+        '&.Mui-focused .MuiOutlinedInput-notchedOutline': {
+            borderColor: 'purple'
+        }
+    },
+    '& .MuiSvgIcon-root': {
+        color: 'pink'
+    },
+    '& .MuiOutlinedInput-root': {
+        color: 'white',
+        '& fieldset': {
+            color: 'red',
+        },
+        '&:hover fieldset': {
+            color: 'green',
+        },
+        '&.Mui-focused fieldset': {
+            color: 'purple',
+        },
+    },
+    '& .MuiInputLabel-root': {
+        color: 'red',
+
+    },
+    
+    '& .MuiMenuItem-root': {
+        color: 'red',
+
+    },
+    
+
+
+}}
+
+*/
