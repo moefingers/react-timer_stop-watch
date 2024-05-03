@@ -1,6 +1,10 @@
 import { useState, useEffect, useRef } from 'react'
 import { fadeOpacityIn, slideInFromLeft, slideOutToRight } from '../assets/Animations'
 import { useInterval } from 'usehooks-ts'
+//import TimePicker component from material ui
+import {LocalizationProvider, TimePicker} from '@mui/x-date-pickers'
+import { AdapterDateFns } from '@mui/x-date-pickers/AdapterDateFnsV3'
+
 export default function SingleTimer({objectPseudoIndex, object, updateMatrix, deleteFromMatrix}) {
 
     const [previousTimeElapsed, setPreviousTimeElapsed] = useState(0)
@@ -71,7 +75,59 @@ export default function SingleTimer({objectPseudoIndex, object, updateMatrix, de
                 {object.timeElapsed != 0 && <button className="timer-button" onClick={resetTimer}>Reset</button>}
                 {object.initialTime - (object.timeElapsed || 0) != 0 && <button className="timer-button" onClick={startStopTimer}>{useIntervalActive ? "Stop" : "Start"}</button>}
             </div>
-            
+            <LocalizationProvider dateAdapter={AdapterDateFns}>
+                <TimePicker sx={{
+
+                    '& .MuiOutlinedInput-notchedOutline': {
+                        color: 'pink',
+                        borderColor: 'pink',
+                        transition: ".3s",
+                        '&:hover': {
+                            borderColor: 'green',
+                        },
+                        '&.Mui-focused': {
+                            borderColor: 'purple',
+                        },
+                    },
+                    '& .MuiOutlinedInput-root': {
+                        color: 'white',
+                        '&.Mui-focused .MuiOutlinedInput-notchedOutline': {
+                            borderColor: 'purple'
+                        }
+                    },
+                    '& .MuiSvgIcon-root': {
+                        color: 'pink'
+                    },
+                    '& .MuiOutlinedInput-root': {
+                        color: 'white',
+                        '& fieldset': {
+                            color: 'red',
+                        },
+                        '&:hover fieldset': {
+                            color: 'green',
+                        },
+                        '&.Mui-focused fieldset': {
+                            color: 'purple',
+                        },
+                    },
+                    '& .MuiInputLabel-root': {
+                        color: 'red',
+
+                    },
+                    
+                    '& .MuiMenuItem-root': {
+                        color: 'red',
+
+                    },
+                    
+
+
+                }}
+
+                    label="Time picker"
+                    format={`hh:mm:ss`}
+                />
+            </LocalizationProvider>
         </li>
     )
 }
