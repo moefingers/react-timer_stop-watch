@@ -196,7 +196,7 @@ export default function SingleTimer({objectPseudoIndex, object, updateMatrix, de
             <div className="timer-input-line">
                 <input type="text" placeholder="Timer Name" className="timer-name-input" onChange={(e) => updateMatrix(objectPseudoIndex, {name: e.target.value})} value={object.name}/>
                 <input ref={timeRemainingElement} placeholder={timerUnitPreview}
-                    className={`timer-time-input ${timerInputValueValid ? "valid-input" : "invalid-input"}`}
+                    className={`timer-time-input ${timerInputValueValid && timerInputValue != "" ? "valid-input" : "invalid-input"}`}
                     onChange={(e) => {
                         updateMatrix(objectPseudoIndex, {initialTime: e.target.value}); 
                         setTimerInputValue(e.target.value)}}
