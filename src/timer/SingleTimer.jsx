@@ -175,7 +175,6 @@ export default function SingleTimer({objectPseudoIndex, object, updateMatrix, de
                 partOfRegExp += (`(?<${key}>\\d+)`)
             } 
             if (settingsObject.units[key] && settingsObject.unitsWithDecimals[key]){
-                // unitsWithDecimalsArray.push(`.${settingsObject.unitAliases[key]}`)
                 partOfUnit += `.d`
                 partOfRegExp += (`\\.*(?<${key}_dec>\\d*)`)
             }
