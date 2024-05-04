@@ -184,6 +184,8 @@ export default function SingleTimer({objectPseudoIndex, object, updateMatrix, de
         })
 
         setTimerUnitPreview(activeTimerUnits.join(":"))
+        console.log(activeTimerUnits)
+        activeTimerUnits.length == 0 && setTimerUnitPreview("select units")
         let test = new RegExp((
             `^${regExpArray.join(":")}$`
         ), "g")
