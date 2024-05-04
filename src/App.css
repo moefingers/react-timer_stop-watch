@@ -394,7 +394,11 @@ button.timer-button.new-timer-button {
 .timer-settings-item{
   transition: .3s
 }
-
+.timer-settings-item:hover{
+  text-shadow: 0 0 .6rem rgba(255,255,255,1);
+  font-size: 1.5rem;
+  transition: .3s;
+}
 
 
 .stopwatch-unordered-list > li{
