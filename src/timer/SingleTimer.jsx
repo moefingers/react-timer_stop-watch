@@ -104,18 +104,32 @@ export default function SingleTimer({objectPseudoIndex, object, updateMatrix, de
 
     function turnMillisecondsPretty(milliseconds) {
         let divisorArray = []
+        let lastUnit
         Object.keys(settingsObject.units).forEach((key) => {
             if (settingsObject.units[key]) {
                 divisorArray.push(settingsObject.unitsAsMilliseconds[key])
+                lastUnit = key
             }
         })
         let prettyArray = []
         let remainingMilliseconds = milliseconds
+        let trailingDecimal = false
         divisorArray.forEach((divisor) => {
             prettyArray.push(Math.floor(remainingMilliseconds / divisor))
             remainingMilliseconds = remainingMilliseconds % divisor
+            console.log(remainingMilliseconds)
+            console.log(divisor)
+            console.log(remainingMilliseconds / divisor)
+            console.log(lastUnit)
+            if (settingsObject.unitsWithDecimals[lastUnit]) {trailingDecimal = (remainingMilliseconds / divisor * 1000).toFixed(0)}
+            console.log(trailingDecimal)
         })
-        return `${prettyArray.join(":")}${settingsObject.unitsWithDecimals.seconds ? "." + remainingMilliseconds : ""}`
+        console.log(trailingDecimal)
+
+        console.log( `${prettyArray.join(":")}${trailingDecimal ? "." + trailingDecimal : ""}`)
+
+        // return `${prettyArray.join(":")}${settingsObject.unitsWithDecimals.seconds ? "." + trailingDecimal : ""}`
+        return `${prettyArray.join(":")}${trailingDecimal ? "." + trailingDecimal : ""}`
     }
 
     function turnPrettyTimeIntoMilliseconds(prettyTime) {
@@ -147,6 +161,8 @@ export default function SingleTimer({objectPseudoIndex, object, updateMatrix, de
     const [timerInputValue, setTimerInputValue] = useState("")
     const [timerInputValueValid, setTimerInputValueValid] = useState(new RegExp(""))
     useEffect(() => {
+        console.log("value changed")
+        // timeRemainingElement.current.value = turnMillisecondsPretty(calculatedInitialMilliseconds - (object.timeElapsed || 0))
         let calculatedms = turnPrettyTimeIntoMilliseconds(timerInputValue)
         console.log(calculatedms)
         setCalculatedInitialMilliseconds(calculatedms)
@@ -164,7 +180,7 @@ export default function SingleTimer({objectPseudoIndex, object, updateMatrix, de
     const [timerUnitPreview, setTimerUnitPreview] = useState("")
     
     useEffect(() => {
-
+        // timeRemainingElement.current.value = turnMillisecondsPretty(calculatedInitialMilliseconds - (object.timeElapsed || 0))
         let activeTimerUnits = []
         let regExpArray = []
         Object.keys(settingsObject.units).forEach((key) => {
@@ -190,7 +206,8 @@ export default function SingleTimer({objectPseudoIndex, object, updateMatrix, de
         ), "g")
         setTimeRegExp(test)
         console.log(test)
-    }, [settingsObject.units])
+    }, [settingsObject.units, settingsObject.unitsWithDecimals])
+
 
     return (
         <li ref={singleTimerElement} className="single-timer">
