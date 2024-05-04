@@ -213,7 +213,9 @@ export default function SingleTimer({objectPseudoIndex, object, updateMatrix, de
         <li ref={singleTimerElement} className="single-timer">
             <div className="timer-input-line">
                 <input type="text" placeholder="Timer Name" className="timer-name-input" onChange={(e) => updateMatrix(objectPseudoIndex, {name: e.target.value})} value={object.name}/>
-                <input ref={timeRemainingElement} placeholder={timerUnitPreview}
+                <input 
+                    ref={timeRemainingElement} 
+                    placeholder={timerUnitPreview}
                     className={`timer-time-input ${timerInputValueValid && timerInputValue != "" ? "valid-input" : "invalid-input"}`}
                     onChange={(e) => {
                         updateMatrix(objectPseudoIndex, {initialTime: e.target.value}); 
@@ -232,7 +234,7 @@ export default function SingleTimer({objectPseudoIndex, object, updateMatrix, de
                         : <div className={`timer-unit-preview ${timerInputValue != "" && !timerInputValueValid ? "visible" : "hidden"} `}>{timerUnitPreview}</div> }
                     
                 </div>
-                <button ref={timerSettingsButton} className="timer-button timer-settings-button" onClick={openCloseTimerSettings}>🛠</button>
+                <button ref={timerSettingsButton} className="timer-button timer-settings-button" onClick={openCloseTimerSettings} style={useIntervalActive ? {visibility: "hidden", transition: "none"} : {}}>🛠</button>
                 
             </div>
             <div  ref={timerSettingsElement} className="timer-settings-wrapper">
