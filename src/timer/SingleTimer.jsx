@@ -209,9 +209,11 @@ export default function SingleTimer({objectPseudoIndex, object, updateMatrix, de
                 <div className="timer-button-line-normal">
                     <button className="timer-button" onClick={deleteTimer} onMouseLeave={() => setDeleteTimerConfirmation(false)}>{deleteTimerConfirmation ? "actually?" : "Delete"}</button>
                     {object.timeElapsed != 0 && <button className="timer-button" onClick={resetTimer}>Reset</button>}
-                    {object.initialTime - (object.timeElapsed || 0) != 0 && <button className="timer-button" onClick={startStopTimer}>{useIntervalActive ? "Stop" : "Start"}</button>}
+                    {object.initialTime - (object.timeElapsed || 0) != 0 && timerInputValueValid 
+                        ? <button className={`timer-button  ${timerInputValue != "" && timerInputValueValid ? "visible" : "hidden"}`} onClick={startStopTimer}>{useIntervalActive ? "Stop" : "Start"}</button> 
+                        : <div className={`timer-unit-preview ${timerInputValue != "" && !timerInputValueValid ? "visible" : "hidden"} `}>{timerUnitPreview}</div> }
+                    
                 </div>
-                
                 <button ref={timerSettingsButton} className="timer-button timer-settings-button" onClick={openCloseTimerSettings}>🛠</button>
                 
             </div>
