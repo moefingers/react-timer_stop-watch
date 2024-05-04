@@ -23,6 +23,24 @@ div.app-container{
   grid-template-columns: 1fr 1fr;
 }
 
+button.shadow-button{
+  position:fixed;
+  top:0;
+  right:0;
+  border: 0;
+  border-radius: 50%;
+  color: white;
+  font-weight: 900;
+  background: rgba(0,0,0,1);
+  opacity: .3;
+  transition: .3s;
+  text-shadow: 0 0 .6rem rgba(255,255,255,1);
+}
+
+button.shadow-button:hover{
+  opacity: 1;
+}
+
 
 .stopwatch-container, .timer-container{
   margin: .7rem;
@@ -49,6 +67,10 @@ div.app-container{
   overflow-y:scroll;
   scroll-behavior: smooth;
   box-sizing: content-box;
+}
+
+.timer-scroll-container{
+  height: 90%;
 }
 
 
@@ -157,6 +179,18 @@ input.timer-name-input, input.timer-time-input{
   transition: .5s;
   cursor:pointer
 }
+/* 
+.valid-input{
+  color: rgb(180,180,180) 
+
+} */
+/* Mama mia so specific! */
+div.timer-input-line > input.timer-time-input.invalid-input{
+  color: rgb(255,100,100);
+  text-shadow: 0 0 10px rgba(255,100,100,1);
+  box-shadow: 0 0 10px rgba(255,100,100,1);
+}
+
 .stopwatch-navigate-list-button:hover{
   text-shadow: 0 0 10px rgba(255,255,255,.8);
   color:rgb(210,210,210)
@@ -259,6 +293,15 @@ transition: .5s;
   transition: .2s;
 }
 
+button.timer-button.timer-settings-button {
+  padding: 0;
+}
+
+button.timer-button.new-timer-button {
+  margin-left: auto;
+}
+
+
 
 .stopwatch-unordered-list{
   list-style-type: "⌚";
@@ -267,22 +310,77 @@ transition: .5s;
 }
 
 .timer-unordered-list{
-  list-style-type: "⏲";
+  list-style: none;
   transition:.5s;
   margin: 0;
+  padding-left: 0;
   margin-top: .4rem;
 }
 
 .timer-unordered-list > li{
  margin-bottom: .3rem;
+ height: 4rem;
+ position: relative;
 }
 
 .timer-input-line, .timer-button-line{
   height: 2rem;
+  width: 100%;
   display:flex;
   justify-content: space-between;
-  margin: 0 .5rem;
+  align-items:center;
+  transition: .3s;
 }
+.timer-button-line-normal{
+  height: 2rem;
+  width: 100%;
+  display:flex;
+  justify-content: space-between;
+  margin: 0;
+  align-items:center;
+  transition: .3s;
+}
+
+.timer-settings-wrapper{
+  position: absolute;
+  width: 0;
+  height: 0;
+  right: 1rem;
+  top:2rem;
+  float: right;
+  background-color: rgba(0, 0, 0, 0.1);
+  backdrop-filter: blur(10px);
+  color: white;
+  transition: .3s;
+  visibility: hidden;
+  z-index: 30;
+  overflow: hidden;
+  
+  box-shadow: 0 0 .5rem rgba(255,255,255,.4);
+}
+
+.timer-settings-wrapper *{
+  margin: 0;
+  padding: 0;
+}
+
+.timer-settings-wrapper ul{
+  list-style: none;
+}
+
+.active-setting {
+  color:rgba(0,200,0,1);
+
+}
+.inactive-setting{
+  color: rgba(200,0,0,1);
+}
+
+.timer-settings-item{
+  transition: .3s
+}
+
+
 
 .stopwatch-unordered-list > li{
   transition: .5s;
@@ -347,3 +445,15 @@ transition: .5s;
       opacity: 1;
   }
 } 
+
+@keyframes pulsatingTextShadow {
+  0% {
+    text-shadow: 0 0 0 rgba(255,255,255,1);
+  }
+  50% {
+    text-shadow: 0 0 10px rgba(255,255,255,1);
+  }
+  100% {
+    text-shadow: 0 0 0 rgba(255,255,255,1);
+  }
+}

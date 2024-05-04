@@ -7,7 +7,7 @@ export default function Timer() {
     const defaultTimerListObject = {
         name: "timer one", 
         timeStarted: Date.now(), 
-        initialTime: 0, 
+        initialTime: "", 
         timeElapsed: 0
     }
     const [timerListObject, setTimerListObject] = useState({0: defaultTimerListObject})
@@ -35,7 +35,7 @@ export default function Timer() {
     const timerScrollElement = useRef()
     useEffect(() => {
         if(timerScrollElement.current){
-        timerScrollElement.current.style= `padding-right: ${timerScrollElement.current.offsetWidth - timerScrollElement.current.clientWidth}px`
+        timerScrollElement.current.style= `padding: 0 ${(timerScrollElement.current.offsetWidth - timerScrollElement.current.clientWidth)/2}px`
         }
       }, [timerScrollElement.current])
 
@@ -51,7 +51,7 @@ export default function Timer() {
                     </ul>
                 </div>
                 <div className="timer-control-button-container">
-                    <button className="timer-button" onClick={createNewTimer}>New</button>
+                    <button className="timer-button new-timer-button" onClick={createNewTimer}>New</button>
                 </div>
             </div>
             <div className="title">Timer</div>

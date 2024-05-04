@@ -1,8 +1,57 @@
 import { useState, useEffect, useRef } from 'react'
-import { fadeOpacityIn, slideInFromLeft, slideOutToRight } from '../assets/Animations'
+import { fadeOpacityIn, slideInFromLeft, slideOutToRight, expandOutToLeftThenExpandOutToBottom} from '../assets/Animations'
 import { useInterval } from 'usehooks-ts'
+import TimerSettings from './TimerSettings'
 export default function SingleTimer({objectPseudoIndex, object, updateMatrix, deleteFromMatrix}) {
 
+    const defaultUnitSettingsObject = {
+        units: {
+            hours: false,
+            minutes: true, 
+            seconds: true, 
+        }, 
+        unitAliases: {
+            hours: "hrs",
+            minutes: "min",
+            seconds: "sec",
+        }, 
+        unitsWithDecimals: {
+            seconds: true
+        },
+        unitsAsMilliseconds: {
+            seconds:/*       */1000,
+            seconds_dec:/*   */1000,
+            minutes:/*       */60000,
+            minutes_dec:/*   */60000,
+            hours:/*         */3600000,
+            hours_dec:/*     */3600000
+
+        }
+    }
+    const [settingsObject, setSettingsObject] = useState(defaultUnitSettingsObject)
+    const [timerSettingsActive, setTimerSettingsActive] = useState(false)
+    const [timerSettingsDelay, setTimerSettingsDelay] = useState(false)
+    const timerSettingsElement = useRef()
+    const timerSettingsButton = useRef()
+    useEffect(() => {
+    //   timerSettingsElement.current.style = `left: ${singleTimerElement.current.getBoundingClientRect().right - singleTimerElement.current.getBoundingClientRect().left}px; `  
+    }, [])
+    async function openCloseTimerSettings(event) {
+        if(!timerSettingsDelay){
+            setTimerSettingsDelay(true)
+            timerSettingsElement.current.animate(expandOutToLeftThenExpandOutToBottom, {
+                duration: 1000, 
+                direction: timerSettingsActive ? "reverse" : "normal", 
+                fill: "forwards"
+            })
+
+            setTimerSettingsActive(!timerSettingsActive)
+            await new Promise(r => setTimeout(r, 1000))
+            setTimerSettingsDelay(false)
+        }
+    }
+
+    const [calculatedInitialMilliseconds, setCalculatedInitialMilliseconds] = useState(0)
     const [previousTimeElapsed, setPreviousTimeElapsed] = useState(0)
 
     const [useIntervalActive, setTimerIntervalActive] = useState(false)
@@ -26,30 +75,64 @@ export default function SingleTimer({objectPseudoIndex, object, updateMatrix, de
 
     function resetTimer(event) {
         setTimerIntervalActive(false)
-        timeRemainingElement.current.value = object.initialTime
+        timeRemainingElement.current.value = turnMillisecondsPretty(calculatedInitialMilliseconds)
         setPreviousTimeElapsed(0)
         updateMatrix(objectPseudoIndex, {timeStarted: Date.now(), timeElapsed: 0})
     }
     function startStopTimer(event) {
+        // turnMillisecondsPretty(calculatedInitialMilliseconds)
+
         updateMatrix(objectPseudoIndex, {timeStarted: Date.now()})
         setPreviousTimeElapsed(object.timeElapsed || 0)
         setTimerIntervalActive(!useIntervalActive)
     }
 
     useInterval(() => {
-        if(object.initialTime == 0 || object.initialTime - object.timeElapsed <= 0){
+        if(calculatedInitialMilliseconds == 0 || calculatedInitialMilliseconds - object.timeElapsed <= 0){
             setTimerIntervalActive(false)
             updateMatrix(objectPseudoIndex, {timeStarted: Date.now(), timeElapsed: 0})
-            timeRemainingElement.current.value = object.initialTime
+            timeRemainingElement.current.value = turnMillisecondsPretty(calculatedInitialMilliseconds)
 
         } else {
 
             updateMatrix(objectPseudoIndex, {timeElapsed: Date.now() - object.timeStarted + previousTimeElapsed})
 
-            timeRemainingElement.current.value = object.initialTime - (object.timeElapsed || 0)
+            timeRemainingElement.current.value = turnMillisecondsPretty(calculatedInitialMilliseconds - (object.timeElapsed || 0))
 
         }
     }, useIntervalActive ? 10 : null)
+
+    function turnMillisecondsPretty(milliseconds) {
+        let divisorArray = []
+        Object.keys(settingsObject.units).forEach((key) => {
+            if (settingsObject.units[key]) {
+                divisorArray.push(settingsObject.unitsAsMilliseconds[key])
+            }
+        })
+        let prettyArray = []
+        let remainingMilliseconds = milliseconds
+        divisorArray.forEach((divisor) => {
+            prettyArray.push(Math.floor(remainingMilliseconds / divisor))
+            remainingMilliseconds = remainingMilliseconds % divisor
+        })
+        return `${prettyArray.join(":")}${settingsObject.unitsWithDecimals.seconds ? "." + remainingMilliseconds : ""}`
+    }
+
+    function turnPrettyTimeIntoMilliseconds(prettyTime) {
+        let calculatedms = 0
+        let matchArray = timeRegExp?.exec(prettyTime)
+        console.log(matchArray?.groups)
+        matchArray?.groups != undefined && Object.keys(matchArray.groups).forEach((key) => {
+            // key : matchArray.groups[key]
+            if(!key.includes("_dec")){calculatedms += Number(matchArray.groups[key] * settingsObject.unitsAsMilliseconds[key])}
+            if(key.includes("_dec")){
+                console.log(key)
+                console.log(matchArray.groups[key])
+                console.log(settingsObject.unitsAsMilliseconds[key])
+                calculatedms += Number(("0." + matchArray.groups[key]) * settingsObject.unitsAsMilliseconds[key])}
+        })
+        return calculatedms
+    }
 
 
     const singleTimerElement = useRef()
@@ -60,18 +143,81 @@ export default function SingleTimer({objectPseudoIndex, object, updateMatrix, de
         }, 250);
     }, [])
 
+    const [timeRegExp, setTimeRegExp] = useState(null)
+    const [timerInputValue, setTimerInputValue] = useState("")
+    const [timerInputValueValid, setTimerInputValueValid] = useState(new RegExp(""))
+    useEffect(() => {
+        let calculatedms = turnPrettyTimeIntoMilliseconds(timerInputValue)
+        console.log(calculatedms)
+        setCalculatedInitialMilliseconds(calculatedms)
+        let fullMatchArrayOfOne = timerInputValue.match(timeRegExp)
+        
+        if(timeRegExp != undefined && fullMatchArrayOfOne?.length > 0){
+            setTimerInputValueValid(true)
+        } else {
+            setTimerInputValueValid(false)
+        }
+
+    }, [timerInputValue, timeRegExp])
+
+
+    const [timerUnitPreview, setTimerUnitPreview] = useState("")
+    
+    useEffect(() => {
+
+        let activeTimerUnits = []
+        let regExpArray = []
+        Object.keys(settingsObject.units).forEach((key) => {
+            let partOfUnit = ""
+            let partOfRegExp = ""
+            if(settingsObject.units[key]){
+                partOfUnit += settingsObject.unitAliases[key]
+                partOfRegExp += (`(?<${key}>\\d+)`)
+            } 
+            if (settingsObject.units[key] && settingsObject.unitsWithDecimals[key]){
+                // unitsWithDecimalsArray.push(`.${settingsObject.unitAliases[key]}`)
+                partOfUnit += `.d`
+                partOfRegExp += (`\\.*(?<${key}_dec>\\d*)`)
+            }
+            partOfUnit && activeTimerUnits.push(partOfUnit)
+            partOfRegExp && regExpArray.push(partOfRegExp)
+        })
+
+        setTimerUnitPreview(activeTimerUnits.join(":"))
+        let test = new RegExp((
+            `^${regExpArray.join(":")}$`
+        ), "g")
+        setTimeRegExp(test)
+        console.log(test)
+    }, [settingsObject.units])
+
     return (
         <li ref={singleTimerElement} className="single-timer">
             <div className="timer-input-line">
                 <input type="text" placeholder="Timer Name" className="timer-name-input" onChange={(e) => updateMatrix(objectPseudoIndex, {name: e.target.value})} value={object.name}/>
-                <input ref={timeRemainingElement} type="number" inputMode="numeric" placeholder="milliseconds" className="timer-time-input" onChange={(e) => updateMatrix(objectPseudoIndex, {initialTime: e.target.value})} defaultValue={object.initialTime - (object.timeElapsed || 0)} readOnly={useIntervalActive ? true : false}/>
+                <input ref={timeRemainingElement} placeholder={timerUnitPreview}
+                    className={`timer-time-input ${timerInputValueValid ? "valid-input" : "invalid-input"}`}
+                    onChange={(e) => {
+                        updateMatrix(objectPseudoIndex, {initialTime: e.target.value}); 
+                        setTimerInputValue(e.target.value)}}
+                    wouldvebeendefaultvaluebuttemporarilyremoved={`defaultValue={(object.initialTime - object.timeElapsed) == 0 ? "" : (object.initialTime - object.timeElapsed)}`}
+                    defaultValue={object.initialTime}
+                    readOnly={useIntervalActive ? true : false}
+                />
             </div>
             <div className="timer-button-line">
-                <button className="timer-button" onClick={deleteTimer} onMouseLeave={() => setDeleteTimerConfirmation(false)}>{deleteTimerConfirmation ? "actually?" : "Delete"}</button>
-                {object.timeElapsed != 0 && <button className="timer-button" onClick={resetTimer}>Reset</button>}
-                {object.initialTime - (object.timeElapsed || 0) != 0 && <button className="timer-button" onClick={startStopTimer}>{useIntervalActive ? "Stop" : "Start"}</button>}
+                <div className="timer-button-line-normal">
+                    <button className="timer-button" onClick={deleteTimer} onMouseLeave={() => setDeleteTimerConfirmation(false)}>{deleteTimerConfirmation ? "actually?" : "Delete"}</button>
+                    {object.timeElapsed != 0 && <button className="timer-button" onClick={resetTimer}>Reset</button>}
+                    {object.initialTime - (object.timeElapsed || 0) != 0 && <button className="timer-button" onClick={startStopTimer}>{useIntervalActive ? "Stop" : "Start"}</button>}
+                </div>
+                
+                <button ref={timerSettingsButton} className="timer-button timer-settings-button" onClick={openCloseTimerSettings}>🛠</button>
+                
             </div>
-            
+            <div  ref={timerSettingsElement} className="timer-settings-wrapper">
+                    <TimerSettings settingsObject={settingsObject} setSettingsObject={setSettingsObject}/>
+            </div>
         </li>
     )
 }
