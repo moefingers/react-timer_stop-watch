@@ -1,53 +1,31 @@
 import { useState, useEffect, useRef } from 'react'
 import { fadeOpacityIn, slideInFromLeft, slideOutToRight, expandOutToLeftThenExpandOutToBottom} from '../assets/Animations'
 import { useInterval } from 'usehooks-ts'
-import TimerSettings from './TimerSettings'
+import UnitSettings from '../UnitSettings'
+import { turnMillisecondsPretty, turnPrettyTimeIntoMilliseconds, defaultUnitSettingsObject } from '../App'
+
 export default function SingleTimer({objectPseudoIndex, object, updateMatrix, deleteFromMatrix}) {
 
-    const defaultUnitSettingsObject = {
-        units: {
-            hours: false,
-            minutes: true, 
-            seconds: true, 
-        }, 
-        unitAliases: {
-            hours: "hrs",
-            minutes: "min",
-            seconds: "sec",
-        }, 
-        unitsWithDecimals: {
-            seconds: true
-        },
-        unitsAsMilliseconds: {
-            seconds:/*       */1000,
-            seconds_dec:/*   */1000,
-            minutes:/*       */60000,
-            minutes_dec:/*   */60000,
-            hours:/*         */3600000,
-            hours_dec:/*     */3600000
-
-        }
-    }
+    
     const [settingsObject, setSettingsObject] = useState(defaultUnitSettingsObject)
-    const [timerSettingsActive, setTimerSettingsActive] = useState(false)
-    const [timerSettingsDelay, setTimerSettingsDelay] = useState(false)
-    const timerSettingsElement = useRef()
-    const timerSettingsButton = useRef()
-    useEffect(() => {
-    //   timerSettingsElement.current.style = `left: ${singleTimerElement.current.getBoundingClientRect().right - singleTimerElement.current.getBoundingClientRect().left}px; `  
-    }, [])
-    async function openCloseTimerSettings(event) {
-        if(!timerSettingsDelay){
-            setTimerSettingsDelay(true)
-            timerSettingsElement.current.animate(expandOutToLeftThenExpandOutToBottom, {
+    const [unitSettingsActive, setUnitSettingsActive] = useState(false)
+    const [unitSettingsDelay, setUnitSettingsDelay] = useState(false)
+    const unitSettingsElement = useRef()
+    // useEffect(() => {
+    //   unitSettingsElement.current.style = `left: ${singleTimerElement.current.getBoundingClientRect().right - singleTimerElement.current.getBoundingClientRect().left}px; `  
+    // }, [])
+    async function openCloseUnitSettings(event) {
+        if(!unitSettingsDelay){
+            setUnitSettingsDelay(true)
+            unitSettingsElement.current.animate(expandOutToLeftThenExpandOutToBottom, {
                 duration: 1000, 
-                direction: timerSettingsActive ? "reverse" : "normal", 
+                direction: unitSettingsActive ? "reverse" : "normal", 
                 fill: "forwards"
             })
 
-            setTimerSettingsActive(!timerSettingsActive)
+            setUnitSettingsActive(!unitSettingsActive)
             await new Promise(r => setTimeout(r, 1000))
-            setTimerSettingsDelay(false)
+            setUnitSettingsDelay(false)
         }
     }
 
@@ -75,12 +53,12 @@ export default function SingleTimer({objectPseudoIndex, object, updateMatrix, de
 
     function resetTimer(event) {
         setTimerIntervalActive(false)
-        timeRemainingElement.current.value = turnMillisecondsPretty(calculatedInitialMilliseconds)
+        timeRemainingElement.current.value = turnMillisecondsPretty(calculatedInitialMilliseconds, settingsObject, timeRegExp)
         setPreviousTimeElapsed(0)
         updateMatrix(objectPseudoIndex, {timeStarted: Date.now(), timeElapsed: 0})
     }
     function startStopTimer(event) {
-        // turnMillisecondsPretty(calculatedInitialMilliseconds)
+        // turnMillisecondsPrettyOld(calculatedInitialMilliseconds)
 
         updateMatrix(objectPseudoIndex, {timeStarted: Date.now()})
         setPreviousTimeElapsed(object.timeElapsed || 0)
@@ -91,18 +69,18 @@ export default function SingleTimer({objectPseudoIndex, object, updateMatrix, de
         if(calculatedInitialMilliseconds == 0 || calculatedInitialMilliseconds - object.timeElapsed <= 0){
             setTimerIntervalActive(false)
             updateMatrix(objectPseudoIndex, {timeStarted: Date.now(), timeElapsed: 0})
-            timeRemainingElement.current.value = turnMillisecondsPretty(calculatedInitialMilliseconds)
+            timeRemainingElement.current.value = turnMillisecondsPretty(calculatedInitialMilliseconds, settingsObject, timeRegExp)
 
         } else {
 
             updateMatrix(objectPseudoIndex, {timeElapsed: Date.now() - object.timeStarted + previousTimeElapsed})
 
-            timeRemainingElement.current.value = turnMillisecondsPretty(calculatedInitialMilliseconds - (object.timeElapsed || 0))
+            timeRemainingElement.current.value = turnMillisecondsPretty(calculatedInitialMilliseconds - (object.timeElapsed || 0), settingsObject, timeRegExp)
 
         }
     }, useIntervalActive ? 10 : null)
 
-    function turnMillisecondsPretty(milliseconds) {
+    function turnMillisecondsPrettyOld(milliseconds, settingsObject) {
         let divisorArray = []
         let lastUnit
         Object.keys(settingsObject.units).forEach((key) => {
@@ -132,7 +110,7 @@ export default function SingleTimer({objectPseudoIndex, object, updateMatrix, de
         return `${prettyArray.join(":")}${trailingDecimal ? "." + trailingDecimal : ""}`
     }
 
-    function turnPrettyTimeIntoMilliseconds(prettyTime) {
+    function turnPrettyTimeIntoMillisecondsOld(prettyTime, settingsObject) {
         let calculatedms = 0
         let matchArray = timeRegExp?.exec(prettyTime)
         console.log(matchArray?.groups)
@@ -162,8 +140,8 @@ export default function SingleTimer({objectPseudoIndex, object, updateMatrix, de
     const [timerInputValueValid, setTimerInputValueValid] = useState(new RegExp(""))
     useEffect(() => {
         console.log("value changed")
-        // timeRemainingElement.current.value = turnMillisecondsPretty(calculatedInitialMilliseconds - (object.timeElapsed || 0))
-        let calculatedms = turnPrettyTimeIntoMilliseconds(timerInputValue)
+        // timeRemainingElement.current.value = turnMillisecondsPrettyOld(calculatedInitialMilliseconds - (object.timeElapsed || 0))
+        let calculatedms = turnPrettyTimeIntoMilliseconds(timerInputValue, settingsObject, timeRegExp)
         console.log(calculatedms)
         setCalculatedInitialMilliseconds(calculatedms)
         let fullMatchArrayOfOne = timerInputValue.match(timeRegExp)
@@ -180,7 +158,7 @@ export default function SingleTimer({objectPseudoIndex, object, updateMatrix, de
     const [timerUnitPreview, setTimerUnitPreview] = useState("")
     
     useEffect(() => {
-        // timeRemainingElement.current.value = turnMillisecondsPretty(calculatedInitialMilliseconds - (object.timeElapsed || 0))
+        // timeRemainingElement.current.value = turnMillisecondsPrettyOld(calculatedInitialMilliseconds - (object.timeElapsed || 0))
         let activeTimerUnits = []
         let regExpArray = []
         Object.keys(settingsObject.units).forEach((key) => {
@@ -234,11 +212,11 @@ export default function SingleTimer({objectPseudoIndex, object, updateMatrix, de
                         : <div className={`timer-unit-preview ${timerInputValue != "" && !timerInputValueValid ? "visible" : "hidden"} `}>{timerUnitPreview}</div> }
                     
                 </div>
-                <button ref={timerSettingsButton} className="timer-button timer-settings-button" onClick={openCloseTimerSettings} style={useIntervalActive ? {visibility: "hidden", transition: "none"} : {}}>🛠</button>
+                <button className="timer-button timer-settings-button" onClick={openCloseUnitSettings} style={useIntervalActive ? {visibility: "hidden", transition: "none"} : {}}>🛠</button>
                 
             </div>
-            <div  ref={timerSettingsElement} className="timer-settings-wrapper">
-                    <TimerSettings settingsObject={settingsObject} setSettingsObject={setSettingsObject}/>
+            <div  ref={unitSettingsElement} className="timer-settings-wrapper">
+                    <UnitSettings settingsObject={settingsObject} setSettingsObject={setSettingsObject}/>
             </div>
         </li>
     )

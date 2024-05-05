@@ -1,8 +1,8 @@
 import { useEffect, useRef } from "react"
 
-import { fadeOpacityIn, slideInFromLeft, slideOutToRight, expandOutToLeftThenExpandOutToBottom } from '../assets/Animations'
+import { fadeOpacityIn, slideInFromLeft, slideOutToRight, expandOutToLeftThenExpandOutToBottom } from './assets/Animations'
 
-export default function TimerSettings({settingsObject, setSettingsObject}) {
+export default function UnitSettings({settingsObject, setSettingsObject}) {
 
     
     function updateSettingsObject(object) {

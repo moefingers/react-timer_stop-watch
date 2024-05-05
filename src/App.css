@@ -294,6 +294,11 @@ opacity:1;
   transition: .2s;
 }
 
+.stopwatch-settings-button{
+  position: absolute;
+  right: 0;
+}
+
 button.timer-button.timer-settings-button {
   padding: 0;
 }
@@ -372,6 +377,10 @@ button.timer-button.new-timer-button {
   overflow: hidden;
   
   box-shadow: 0 0 .5rem rgba(255,255,255,.4);
+}
+div.stopwatch-settings-wrapper{
+  top: unset;
+  bottom: 2rem;
 }
 
 .timer-settings-wrapper *{

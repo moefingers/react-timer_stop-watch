@@ -1,8 +1,10 @@
 import { useEffect, useRef, useState } from 'react'
 import { useInterval } from 'usehooks-ts'
 
-import { fadeOpacityIn, slideInFromLeft, slideInFromRight, slideOutToRight, slideOutToLeft } from '../assets/Animations'
+import { fadeOpacityIn, slideInFromLeft, slideInFromRight, slideOutToRight, slideOutToLeft, expandOutToLeftThenExpandOutToBottom } from '../assets/Animations'
 import StopwatchTimeItem from './StopwatchTimeItem'
+import { turnMillisecondsPretty, turnPrettyTimeIntoMilliseconds, defaultUnitSettingsObject } from '../App'
+import UnitSettings from '../UnitSettings'
 export default function Stopwatch() {
 
     // Stopwatch and useinterval
@@ -190,6 +192,30 @@ const stopwatchScrollElement = useRef()
       }
     }, [stopwatchListObject])
 
+
+    const [settingsObject, setSettingsObject] = useState(defaultUnitSettingsObject)
+    const [unitSettingsActive, setUnitSettingsActive] = useState(false)
+    const [unitSettingsDelay, setUnitSettingsDelay] = useState(false)
+    const unitSettingsElement = useRef()
+    // useEffect(() => {
+    //   unitSettingsElement.current.style = `left: ${singleTimerElement.current.getBoundingClientRect().right - singleTimerElement.current.getBoundingClientRect().left}px; `  
+    // }, [])
+    async function openCloseUnitSettings(event) {
+        if(!unitSettingsDelay){
+            setUnitSettingsDelay(true)
+            unitSettingsElement.current.animate(expandOutToLeftThenExpandOutToBottom, {
+                duration: 1000, 
+                direction: unitSettingsActive ? "reverse" : "normal", 
+                fill: "forwards"
+            })
+
+            setUnitSettingsActive(!unitSettingsActive)
+            await new Promise(r => setTimeout(r, 1000))
+            setUnitSettingsDelay(false)
+        }
+    }
+
+
     return (
         <div className="stopwatch-container">
             {<div ref={stopwatchListElement} className='stopwatch-list-container'>
@@ -222,6 +248,10 @@ const stopwatchScrollElement = useRef()
                   </div>}
                 </div>
                 {!useIntervalActive && <button className='stopwatch-navigate-list-button' onClick={nextList}>&gt;</button>}
+                <button className="stopwatch-control-button stopwatch-settings-button" onClick={openCloseUnitSettings} style={useIntervalActive ? {visibility: "hidden", transition: "none"} : {}}>🛠</button>
+                <div  ref={unitSettingsElement} className="timer-settings-wrapper stopwatch-settings-wrapper">
+                    <UnitSettings settingsObject={settingsObject} setSettingsObject={setSettingsObject}/>
+                </div>
               </div>
               <div className="stopwatch-control-button-container"><button className='stopwatch-control-button' onClick={() => runStopWatch()}>{useIntervalActive ? 'Stop' : 'Watch'}</button>
               {!useIntervalActive && <button className='stopwatch-control-button' onClick={resetAndCreateNewList}>New</button>}
